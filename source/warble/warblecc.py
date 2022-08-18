@@ -28,6 +28,6 @@ def main():
 
     parse.program()
     emitter.writeFile()
-    print("Transpiling completed.")
+    print("Transpiling complete.")
 
 main()

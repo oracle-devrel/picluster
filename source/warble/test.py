@@ -20,15 +20,20 @@ def runTest(test):
         output = output.read()
         print(output)
 
-        if output.find("Transpiling completed.") != -1:
-            print("RUNNING")
-            output = os.popen('python3 out.py')
-            print(output.read())
+        print("RUNNING")
 
-            if test[2] == output.read():
+        if output.strip().find("Transpiling complete.") != -1:
+            output = os.popen('python3 out.py')
+            output = output.read()
+            print("OUTPUT")
+            print(output)
+
+            if output.strip().find(test[2]) != -1:
                 print("SUCCESS")
             else:
                 abort("FAILED {}".format(test[0]))
+        else:
+            print("ERROR RUNNING")
 
         print('--------------------------------------------------------------------------------')
     except:
@@ -51,6 +56,8 @@ def main():
 
 
              ["iftest1", "python3 warblecc.py -v \"{VAR a=10*3;IF(1<2){PRINT(a)}}\"", "30"],
+             ["ifelsetest1", "python3 warblecc.py -v \"{VAR a=10*3;IF(a<10){PRINT(a)}ELSE{PRINT(\\\"sonic screwdriver\\\")}}\"", "sonic screwdriver"],
+
              ["whiletest1", "python3 warblecc.py -v \"{VAR i=0;WHILE(i<10){PRINT(i);i++}}\"", ""],
              ["whiletest2", "python3 warblecc.py -v \"{VAR i=10;WHILE(i>0){PRINT(i);i--}}\"", ""],
              #["dectest1", "python3 warblecc.py -v "{FUNCTION foo(x, y){VAR i=10;WHILE(i>0){PRINT(i);i--}}}"''"
