@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <title>Metaverse Room</title>
+    <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1a5f2348ffe8647e65e0c14788f5ae2bf27ed0cc/dist/aframe-master.min.js" ></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+    <link href="./css/style.css" rel="stylesheet">
+
+
+<body>
+    <div id="loadingScreen"><button class="button">Enter</button></div>
+
+    <!-- 3D scene START -->
+    <a-scene fog="type: linear; color: #AAA" background="color: #181616" cursor="rayOrigin: mouse" renderer="antialias: true; colorManagement: true; sortObjects: true; physicallyCorrectLights: true; maxCanvasWidth: 1920; maxCanvasHeight: 1920;">
+
+    <!-- navMesh asset loader START -->
+    <a-asset-item id="CircleNavMesh" src="./navmesh/navmeshcircle.gltf"></a-asset-item>
+    <!-- navMesh asset loader END -->
+
+    <!-- asset loader START -->
+    <a-assets>
+    <img id="larry" src="./assets/2DAssets/larry.png">
+    <item id="TronFloor" src="./assets/3DModels/floorMesh.gltf">
+    <item id="TronFloor2" src="./assets/3DModels/floorMesh.gltf">
+    <item id="logo" src="./assets/3DModels/oLogo.gltf">
+    <!-- <item id="larryFrame" src="./assets/3DModels/larry.gltf"> -->
+    <item id="redCluster" src="./assets/3DModels/redCluster.gltf">
+    <audio id="bgSoundtrack" src="./assets/Audio/tronDay.m4v" preload="auto"></audio>
+    </a-assets>
+    <!-- asset loader END -->
+
+    <!-- 3D asset scene placement START -->
+    <a-entity id="env">
+    <a-entity id="3dFloor" gltf-model="#TronFloor" rotation="0 0 0" position="0 0.01 0" scale="0.1 0.1 0.1"></a-entity>
+    <a-entity id="ologo" gltf-model="#logo" rotation="90 0 0" position="0 10 0" scale="1 1 1" animation="property: rotation;from : 90 90 0; to: 90 450 0; loop: true;easing: linear; dur: 100000"></a-entity>
+    <a-entity id="redCluster" gltf-model="#redCluster" rotation="0 0 0" position="0 0 0" scale="1 1 1" animation="property: rotation;from : 0 0 0; to: 0 0 0; loop: true;easing: linear; dur: 100000"></a-entity>
+    </a-entity>
+    <!-- 3D asset scene placement END -->
+    
+    <!-- primitives placement START -->
+    <!-- <a-entity id="MovingPictures" postion="0 10 0" animation="property: rotation;from : 0 0 0; to: 0 360 0; loop: true;easing: linear; dur: 100000">
+        <a-box position="0 10 -5" rotation="0 45 45" scale="2 2 2" src="#larry" animation="property: rotation;from : 0 0 0; to: 45 270 360; loop: true;easing: linear; dur: 100000">
+        </a-box> -->
+    </a-entity>
+    <a-entity light="intensity: 8; type: point" rotation="0 0 0" position="0 5 0"></a-entity>
+    <a-entity light="type: point; intensity: 8"></a-entity>
+
+<!-- primitives placement END -->
+   
+<!-- portals placement START -->
+
+<!-- <a-link id="Blender on OCI" href="https://github.com/oracle-devrel/terraform-oci-blender" title="Blender on OCI" geometry="primitive: circle; segments: 64" material="shader: portal; side: double; backgroundColor: #7fe7f0; strokeColor: #26526a" link="backgroundColor: #7fe7f0; borderColor: #26526a" position="-30 2 0" rotation="0 -270 0"></a-link>
+
+<a-link id="Blender Video" href="https://www.youtube.com/watch?v=amqxaw2Ujn4" title="Blender Video" geometry="primitive: circle; segments: 64" material="shader: portal; side: double; backgroundColor: #7fe7f0; strokeColor: #26526a" link="backgroundColor: #7fe7f0; borderColor: #26526a" position="-30 2 20" rotation="0 -270 0"></a-link>
+
+<a-link id="Slack" href="https://bit.ly/devrel-xrlabs-channel" title="Slack" geometry="primitive: circle; segments: 64" material="shader: portal; side: double; backgroundColor: #7fe7f0; strokeColor: #26526a" link="backgroundColor: #7fe7f0; borderColor: #26526a" position="-30 2 -20" rotation="0 -270 0"></a-link> -->
+
+<!-- portals placement END -->
+
+
+<!-- navMes placement START-->
+      <a-entity gltf-model="#CircleNavMesh" position="0 -0.01 0" scale="60 1 60" visible="false" nav-mesh></a-entity>
+    <!-- navMes placement END-->
+
+    <!-- navMes cameraRig placement START-->
+    <a-entity id="cameraRig" position="-6.8 0 0" rotation="0 -90 0" movement-controls="constrainToNavMesh: true">
+    
+    <!-- camera START-->
+    <a-entity camera id="camera" look-controls position="0 1.6 0">
+        <a-cursor></a-cursor>
+        <a-entity oculus-touch-controls="hand: left" thumbstick-logging></a-entity>
+        <a-entity oculus-touch-controls="hand: right" thumbstick-logging></a-entity>
+        <a-entity light="type: point; intensity: 8; angle:120"></a-entity>
+    <!-- <a-cursor color="#4febf2"></a-cursor> -->
+    </a-entity>
+    <!-- camera END-->
+    </a-entity> 
+    <!-- navMes cameraRig placement END-->
+
+    </a-scene>
+    <!-- 3D scene END -->
+
+
+<script src="./js/music.js"></script>
+<script src="./js/meta.js"></script>
+</body>
+
+</html>
