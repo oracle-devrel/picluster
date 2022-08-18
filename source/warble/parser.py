@@ -99,6 +99,7 @@ class Parser:
                     self.nextToken()
 
                 if self.checkToken(TokenType.END_BLOCK):
+                    self.nextToken()
                     break
 
 
@@ -106,8 +107,72 @@ class Parser:
     def parseStatement(self):
         # Check the first token to see what kind of statement this is.
 
+        # "VAR" ident = expression
+        if self.checkToken(TokenType.VAR):
+            self.nextToken()
+            #  Check if ident exists in symbol table. If not, declare it.
+            if self.curToken.text not in self.symbols:
+                self.symbols.add(self.curToken.text)
+
+            self.emitter.emit(self.getIndent() + self.curToken.text + " = ")
+            self.match(TokenType.IDENT)
+            self.match(TokenType.EQ)
+
+            self.parseExpression()
+            self.emitter.emitLine('')
+
+            if self.checkToken(TokenType.SEPARATOR):
+                self.nextToken()
+
+        # IF ( comparison ) block
+        elif self.checkToken(TokenType.IF):
+            self.nextToken()
+            self.match(TokenType.BEGIN)
+            self.emitter.emit(self.getIndent() + "if (")
+            self.parseComparison()
+            self.match(TokenType.END)
+            self.emitter.emitLine("):")
+            self.incIndent()
+            self.parseBlock()
+            self.decIndent()
+            utils.debug("here " + self.curToken.text)
+            if self.checkToken(TokenType.ELSE):
+                utils.debug("here " + self.curToken.text)
+                self.nextToken()
+                self.emitter.emitLine(self.getIndent() + "else:")
+                self.incIndent()
+                self.parseBlock()
+                self.decIndent()
+
+        # WHILE ( comparison ) block
+        elif self.checkToken(TokenType.WHILE):
+            self.nextToken()
+            self.match(TokenType.BEGIN)
+            self.emitter.emit(self.getIndent() + "while (")
+            self.parseComparison()
+            self.match(TokenType.END)
+            self.emitter.emitLine("):")
+            self.incIndent()
+            self.parseBlock()
+            self.decIndent()
+
+        # IDENT ++ | --
+        elif self.checkToken(TokenType.IDENT):
+            ident = self.curToken.text
+            self.nextToken()
+            if self.checkToken(TokenType.PLUSPLUS):
+                self.nextToken()
+                self.emitter.emitLine(self.getIndent() + "{} = {} + 1".format(ident, ident))
+            elif self.checkToken(TokenType.MINUSMINUS):
+                utils.debug(self.curToken.text)
+                self.nextToken()
+                utils.debug(self.curToken.text)
+                self.emitter.emitLine(self.getIndent() + "{} = {} - 1".format(ident, ident))
+
+        # Functions
+
         # PRINT ( expression | string )
-        if self.checkToken(TokenType.PRINT):
+        elif self.checkToken(TokenType.PRINT):
             self.nextToken()
             self.match(TokenType.BEGIN)
             utils.debug(self.curToken.kind)
@@ -179,60 +244,6 @@ class Parser:
             self.match(TokenType.STRING)
             self.match(TokenType.END)
             self.emitter.emitLine(self.getIndent() + "warbleapi.play_sound(\"" + url + "\")\n")
-
-        # "VAR" ident = expression
-        elif self.checkToken(TokenType.VAR):
-            self.nextToken()
-            #  Check if ident exists in symbol table. If not, declare it.
-            if self.curToken.text not in self.symbols:
-                self.symbols.add(self.curToken.text)
-
-            self.emitter.emit(self.getIndent() + self.curToken.text + " = ")
-            self.match(TokenType.IDENT)
-            self.match(TokenType.EQ)
-
-            self.parseExpression()
-            self.emitter.emitLine('')
-
-            if self.checkToken(TokenType.SEPARATOR):
-                self.nextToken()
-
-        # IF ( comparison ) block
-        elif self.checkToken(TokenType.IF):
-            self.nextToken()
-            self.match(TokenType.BEGIN)
-            self.emitter.emit(self.getIndent() + "if (")
-            self.parseComparison()
-            self.match(TokenType.END)
-            self.emitter.emitLine("):")
-            self.incIndent()
-            self.parseBlock()
-            self.decIndent()
-
-        # WHILE ( comparison ) block
-        elif self.checkToken(TokenType.WHILE):
-            self.nextToken()
-            self.match(TokenType.BEGIN)
-            self.emitter.emit(self.getIndent() + "while (")
-            self.parseComparison()
-            self.match(TokenType.END)
-            self.emitter.emitLine("):")
-            self.incIndent()
-            self.parseBlock()
-            self.decIndent()
-
-        # IDENT ++ | --
-        elif self.checkToken(TokenType.IDENT):
-            ident = self.curToken.text
-            self.nextToken()
-            if self.checkToken(TokenType.PLUSPLUS):
-                self.nextToken()
-                self.emitter.emitLine(self.getIndent() + "{} = {} + 1".format(ident, ident))
-            elif self.checkToken(TokenType.MINUSMINUS):
-                utils.debug(self.curToken.text)
-                self.nextToken()
-                utils.debug(self.curToken.text)
-                self.emitter.emitLine(self.getIndent() + "{} = {} - 1".format(ident, ident))
 
         # This is not a valid statement. Error!
         else:

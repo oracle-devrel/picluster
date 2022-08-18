@@ -99,11 +99,11 @@ class Lexer:
         elif self.curChar == '(':
             token = Token(self.curChar, TokenType.BEGIN)
         elif self.curChar == ')':
+            token = Token(self.curChar, TokenType.END)
         elif self.curChar == '{':
             token = Token(self.curChar, TokenType.BEGIN_BLOCK)
         elif self.curChar == '}':
             token = Token(self.curChar, TokenType.END_BLOCK)
-            token = Token(self.curChar, TokenType.END)
         elif self.curChar == ',':
             token = Token(self.curChar, TokenType.COMMA)
         elif self.curChar == '\n':
@@ -198,6 +198,7 @@ class TokenType(enum.Enum):
     #FUNCTION = 101 #TODO this could make a global repository of functions available to be able to write larger programs
     VAR = 105
     IF = 106
+    ELSE = 107
     WHILE = 109
 
     # Functions.
