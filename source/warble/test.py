@@ -60,6 +60,9 @@ def main():
 
              ["whiletest1", "python3 warblecc.py -v \"{VAR i=0;WHILE(i<10){PRINT(i);i++}}\"", ""],
              ["whiletest2", "python3 warblecc.py -v \"{VAR i=10;WHILE(i>0){PRINT(i);i--}}\"", ""],
+
+             ["fortest1", "python3 warblecc.py -v \"{FOR(i=0;i<10;i++){PRINT(i)}}\"", ""],
+
              #["dectest1", "python3 warblecc.py -v "{FUNCTION foo(x, y){VAR i=10;WHILE(i>0){PRINT(i);i--}}}"''"
              ["drawtest1", "python3 warblecc.py -v \"{DRAW(1+1,1-1,2,3,4)}\"", ""],
              ["drawtest2", "python3 warblecc.py -v \"{VAR x=1;DRAWLINE(1+1,1-1,x,x,2,3,4)}\"", ""]
