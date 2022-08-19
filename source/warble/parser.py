@@ -14,6 +14,7 @@ class Parser:
 
         self.symbols = set()        # All variables that have been declared so far.
 
+        self.prevToken = None
         self.curToken = None
         self.peekToken = None
         self.nextToken()
@@ -56,6 +57,7 @@ class Parser:
 
     # Advances the current token.
     def nextToken(self):
+        self.prevToken = self.curToken
         self.curToken = self.peekToken
         self.peekToken = self.lexer.getToken()
         # No need to worry about passing the EOF, lexer handles that.
@@ -67,6 +69,7 @@ class Parser:
 
 
     def abort(self, message):
+        utils.debug("Error! " + message)
         sys.exit("Error! " + message)
 
 
@@ -156,18 +159,48 @@ class Parser:
             self.parseBlock()
             self.decIndent()
 
+        # FOR ( identifier = AssignmentExpression ; comparison ; expression ) block
+        elif self.checkToken(TokenType.FOR):
+            self.nextToken()
+            self.match(TokenType.BEGIN)
+
+            #  Check if ident exists in symbol table. If not, declare it.
+            if self.curToken.text not in self.symbols:
+                self.symbols.add(self.curToken.text)
+
+            variable = self.curToken.text
+            utils.debug('dude ' + variable)
+            self.emitter.emit(self.getIndent() + variable + " = ")
+
+            self.match(TokenType.IDENT)
+            self.match(TokenType.EQ)
+            self.parseExpression()
+            self.emitter.emitLine("")
+
+            self.match(TokenType.SEPARATOR)
+
+
+            self.emitter.emit(self.getIndent() + "while (")
+            utils.debug('dude')
+            self.parseComparison()
+
+            self.match(TokenType.SEPARATOR)
+            self.emitter.emitLine("):")
+            self.incIndent()
+
+            self.emitter.emit(self.getIndent())
+            self.parseExpression()
+            self.emitter.emitLine("")
+            self.match(TokenType.END)
+
+            self.parseBlock()
+            self.decIndent()
+
         # IDENT ++ | --
         elif self.checkToken(TokenType.IDENT):
-            ident = self.curToken.text
+            self.emitter.emit(self.getIndent() + self.curToken.text)
             self.nextToken()
-            if self.checkToken(TokenType.PLUSPLUS):
-                self.nextToken()
-                self.emitter.emitLine(self.getIndent() + "{} = {} + 1".format(ident, ident))
-            elif self.checkToken(TokenType.MINUSMINUS):
-                utils.debug(self.curToken.text)
-                self.nextToken()
-                utils.debug(self.curToken.text)
-                self.emitter.emitLine(self.getIndent() + "{} = {} - 1".format(ident, ident))
+            self.parseIncOperator()
 
         # Functions
 
@@ -184,7 +217,7 @@ class Parser:
             else:
                 self.emitter.emit(self.getIndent() + "print(")
                 self.parseExpression()
-                self.emitter.emitLine(self.getIndent() + ")")
+                self.emitter.emitLine(")")
                 self.match(TokenType.END)
 
         # LOG ( expression | string )
@@ -249,6 +282,17 @@ class Parser:
         else:
             self.abort("Invalid statement at " + self.curToken.text + " (" + self.curToken.kind.name + ")")
 
+    def parseIncOperator(self):
+        #utils.debug("dd")
+        #if self.prevToken.kind.
+        #utils.debug("here")
+        ident = self.prevToken.text
+        if self.checkToken(TokenType.PLUSPLUS):
+            self.nextToken()
+            self.emitter.emitLine(" = {} + 1".format(ident, ident))
+        elif self.checkToken(TokenType.MINUSMINUS):
+            self.nextToken()
+            self.emitter.emitLine(" = {} - 1".format(ident, ident))
 
     def parseArguments(self, args):
         for argParserFunction in args:
@@ -304,6 +348,8 @@ class Parser:
             self.emitter.emit(self.curToken.text)
             self.nextToken()
         self.parsePrimary()
+        if self.checkToken(TokenType.PLUSPLUS) or self.checkToken(TokenType.MINUSMINUS):
+            self.parseIncOperator()
 
 
     # primary ::= number | ident

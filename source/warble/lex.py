@@ -73,6 +73,8 @@ class Lexer:
             token = Token(self.curChar, TokenType.ASTERISK)
         elif self.curChar == '/':
             token = Token(self.curChar, TokenType.SLASH)
+        elif self.curChar == '%':
+            token = Token(self.curChar, TokenType.MODULOUS)
         elif self.curChar == '>':
             if self.peek() == '=':
                 lastChar = self.curChar
@@ -200,6 +202,7 @@ class TokenType(enum.Enum):
     IF = 106
     ELSE = 107
     WHILE = 109
+    FOR = 110
 
     # Functions.
     PRINT = 120
@@ -215,13 +218,14 @@ class TokenType(enum.Enum):
     MINUS = 203
     ASTERISK = 204
     SLASH = 205
-    EQEQ = 206
-    NOTEQ = 207
-    LT = 208
-    LTEQ = 209
-    GT = 210
-    GTEQ = 211
-    COMMA = 212
-    SEPARATOR = 213
-    PLUSPLUS = 214
-    MINUSMINUS = 215
+    MODULOUS = 206
+    EQEQ = 220
+    NOTEQ = 221
+    LT = 222
+    LTEQ = 223
+    GT = 224
+    GTEQ = 225
+    COMMA = 226
+    SEPARATOR = 227
+    PLUSPLUS = 228
+    MINUSMINUS = 229
