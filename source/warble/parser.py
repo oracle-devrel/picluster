@@ -79,6 +79,7 @@ class Parser:
     def program(self):
         self.emitter.headerLine("#!/usr/bin/python3")
         self.emitter.emitLine("import warbleapi")
+        self.emitter.emitLine("from math import acos")
 
         while self.checkToken(TokenType.NEWLINE):
             self.nextToken()
@@ -138,9 +139,7 @@ class Parser:
             self.incIndent()
             self.parseBlock()
             self.decIndent()
-            utils.debug("here " + self.curToken.text)
             if self.checkToken(TokenType.ELSE):
-                utils.debug("here " + self.curToken.text)
                 self.nextToken()
                 self.emitter.emitLine(self.getIndent() + "else:")
                 self.incIndent()
@@ -169,7 +168,6 @@ class Parser:
                 self.symbols.add(self.curToken.text)
 
             variable = self.curToken.text
-            utils.debug('dude ' + variable)
             self.emitter.emit(self.getIndent() + variable + " = ")
 
             self.match(TokenType.IDENT)
@@ -181,7 +179,6 @@ class Parser:
 
 
             self.emitter.emit(self.getIndent() + "while (")
-            utils.debug('dude')
             self.parseComparison()
 
             self.match(TokenType.SEPARATOR)
@@ -200,12 +197,27 @@ class Parser:
         elif self.checkToken(TokenType.IDENT):
             self.emitter.emit(self.getIndent() + self.curToken.text)
             self.nextToken()
-            self.parseIncOperator()
+            if self.checkToken(TokenType.EQ):
+                self.nextToken()
+                self.emitter.emit("=")
+                #self.parseIncOperator()
+                self.parseExpression()
+                self.emitter.emitLine("")
+            else:
+                self.parseIncOperator()
 
-        # Functions
 
+        else:
+            # Functions
+            if lex.Token.checkIfFunction(self.curToken.text):
+                self.parseFunction()
+            # This is not a valid statement. Error!
+            else:
+                self.abort("Invalid statement at " + self.curToken.text + " (" + self.curToken.kind.name + ")")
+
+    def parseFunction(self, newline = True):
         # PRINT ( expression | string )
-        elif self.checkToken(TokenType.PRINT):
+        if self.checkToken(TokenType.PRINT):
             self.nextToken()
             self.match(TokenType.BEGIN)
             utils.debug(self.curToken.kind)
@@ -217,7 +229,7 @@ class Parser:
             else:
                 self.emitter.emit(self.getIndent() + "print(")
                 self.parseExpression()
-                self.emitter.emitLine(")")
+                self.emitter.emit(")")
                 self.match(TokenType.END)
 
         # LOG ( expression | string )
@@ -236,6 +248,23 @@ class Parser:
                 self.emitter.emitLine(self.getIndent() + ")")
                 self.match(TokenType.END)
 
+        elif self.checkToken(TokenType.ACOS):
+            self.nextToken()
+            self.emitter.emit(self.getIndent() + "acos(")
+            self.match(TokenType.BEGIN)
+            self.parseExpression()
+            self.emitter.emit(")")
+            self.match(TokenType.END)
+
+        elif self.checkToken(TokenType.ROUND):
+            self.nextToken()
+            self.emitter.emit(self.getIndent() + "round(")
+            self.match(TokenType.BEGIN)
+            functionTypes = [self.parseExpression, self.parseExpression]
+            self.parseArguments(functionTypes);
+            self.emitter.emit(")")
+
+
         # DRAW ( expression, expression, expression, expression, expression )
         elif self.checkToken(TokenType.DRAW):
             self.nextToken()
@@ -245,7 +274,7 @@ class Parser:
                 self.emitter.emit(self.getIndent() + "warbleapi.draw(")
                 functionTypes = [self.parseExpression, self.parseExpression, self.parseExpression, self.parseExpression, self.parseExpression]
                 self.parseArguments(functionTypes);
-                self.emitter.emitLine(")")
+                self.emitter.emit(")")
 
         # DRAWLINE ( expression, expression, expression, expression, expression, expression, expression )
         elif self.checkToken(TokenType.DRAWLINE):
@@ -256,7 +285,7 @@ class Parser:
                 self.emitter.emit(self.getIndent() + "warbleapi.drawline(")
                 functionTypes = [self.parseExpression, self.parseExpression, self.parseExpression, self.parseExpression, self.parseExpression, self.parseExpression, self.parseExpression]
                 self.parseArguments(functionTypes);
-                self.emitter.emitLine(")")
+                self.emitter.emit(")")
 
         # LIGHTS ( expression, expression, expression, expression )
         elif self.checkToken(TokenType.LIGHTS):
@@ -267,7 +296,7 @@ class Parser:
                 self.emitter.emit(self.getIndent() + "warbleapi.lights(")
                 functionTypes = [self.parseExpression, self.parseExpression, self.parseExpression, self.parseExpression]
                 self.parseArguments(functionTypes);
-                self.emitter.emitLine(")")
+                self.emitter.emit(")")
 
         # PLAYSOUND ( string )
         elif self.checkToken(TokenType.PLAYSOUND):
@@ -276,16 +305,12 @@ class Parser:
             url = self.curToken.text
             self.match(TokenType.STRING)
             self.match(TokenType.END)
-            self.emitter.emitLine(self.getIndent() + "warbleapi.play_sound(\"" + url + "\")\n")
+            self.emitter.emit(self.getIndent() + "warbleapi.play_sound(\"" + url + "\")\n")
 
-        # This is not a valid statement. Error!
-        else:
-            self.abort("Invalid statement at " + self.curToken.text + " (" + self.curToken.kind.name + ")")
+        if newline == True:
+            self.emitter.emitLine("")
 
     def parseIncOperator(self):
-        #utils.debug("dd")
-        #if self.prevToken.kind.
-        #utils.debug("here")
         ident = self.prevToken.text
         if self.checkToken(TokenType.PLUSPLUS):
             self.nextToken()
@@ -322,13 +347,18 @@ class Parser:
 
     # expression ::= term {( "-" | "+" ) term}
     def parseExpression(self):
-        self.parseTerm()
-
-        # Can have 0 or more +/- and expressions.
-        while self.checkToken(TokenType.PLUS) or self.checkToken(TokenType.MINUS):
-            self.emitter.emit(self.curToken.text)
-            self.nextToken()
+        if lex.Token.checkIfFunctionWithResult(self.curToken.text):
+            self.decIndent()
+            self.parseFunction(newline = False)
+            self.incIndent()
+        else:
             self.parseTerm()
+
+            # Can have 0 or more +/- and expressions.
+            while self.checkToken(TokenType.PLUS) or self.checkToken(TokenType.MINUS):
+                self.emitter.emit(self.curToken.text)
+                self.nextToken()
+                self.parseTerm()
 
 
     # term ::= unary {( "/" | "*" ) unary}
@@ -354,7 +384,11 @@ class Parser:
 
     # primary ::= number | ident
     def parsePrimary(self):
-        if self.checkToken(TokenType.NUMBER):
+        if lex.Token.checkIfFunctionWithResult(self.curToken.text):
+            self.decIndent()
+            self.parseFunction(newline = False)
+            self.incIndent()
+        elif self.checkToken(TokenType.NUMBER):
             self.emitter.emit(self.curToken.text)
             self.nextToken()
         elif self.checkToken(TokenType.IDENT):

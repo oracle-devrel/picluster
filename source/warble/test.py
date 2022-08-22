@@ -65,7 +65,12 @@ def main():
 
              #["dectest1", "python3 warblecc.py -v "{FUNCTION foo(x, y){VAR i=10;WHILE(i>0){PRINT(i);i--}}}"''"
              ["drawtest1", "python3 warblecc.py -v \"{DRAW(1+1,1-1,2,3,4)}\"", ""],
-             ["drawtest2", "python3 warblecc.py -v \"{VAR x=1;DRAWLINE(1+1,1-1,x,x,2,3,4)}\"", ""]
+             ["drawtest2", "python3 warblecc.py -v \"{VAR x=1;DRAWLINE(1+1,1-1,x,x,2,3,4)}\"", ""],
+
+             ["func1", "python3 warblecc.py -v \"{PRINT(ROUND(ACOS(0.0),3))}\"", "1.571"],
+             ["func2", "python3 warblecc.py -v \"{PRINT(2*ROUND(ACOS(0.0),3))}\"", "3.142"],
+             ["func3", "python3 warblecc.py -v \"{VAR r=ROUND(ACOS(0.0),3);PRINT(r)}\"", "1.571"],
+             ["func4", "python3 warblecc.py -v \"{VAR r=ROUND(ACOS(0.0),3);r=r*2;PRINT(r)}\"", "3.142"]
             ]
 
     for test in TESTS:
