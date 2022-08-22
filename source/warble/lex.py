@@ -179,7 +179,23 @@ class Token:
     def checkIfKeyword(tokenText):
         for kind in TokenType:
             # Relies on all keyword enum values being 1XX.
-            if kind.name == tokenText and 100 < kind.value and kind.value < 200:
+            if kind.name == tokenText and 100 < kind.value and kind.value < 500:
+                return kind
+        return None
+
+    @staticmethod
+    def checkIfFunction(tokenText):
+        for kind in TokenType:
+            # Relies on all keyword enum values being 1XX.
+            if kind.name == tokenText and 300 <= kind.value:
+                return kind
+        return None
+
+    @staticmethod
+    def checkIfFunctionWithResult(tokenText):
+        for kind in TokenType:
+            # Relies on all keyword enum values being 1XX.
+            if kind.name == tokenText and 400 < kind.value and kind.value < 500:
                 return kind
         return None
 
@@ -197,20 +213,12 @@ class TokenType(enum.Enum):
     END = 7
 
     # Keywords.
-    #FUNCTION = 101 #TODO this could make a global repository of functions available to be able to write larger programs
+    #FUN = 101
     VAR = 105
     IF = 106
     ELSE = 107
     WHILE = 109
     FOR = 110
-
-    # Functions.
-    PRINT = 120
-    LOG = 121
-    DRAW = 122
-    DRAWLINE = 123
-    PLAYSOUND = 190
-    LIGHTS = 191
 
     # Operators.
     EQ = 201
@@ -229,3 +237,16 @@ class TokenType(enum.Enum):
     SEPARATOR = 227
     PLUSPLUS = 228
     MINUSMINUS = 229
+
+    # Functions.
+    PRINT = 320
+    LOG = 321
+    DRAW = 322
+    DRAWLINE = 323
+
+    PLAYSOUND = 390
+    LIGHTS = 391
+
+    # Functions with returns values
+    ROUND = 401
+    ACOS = 402
