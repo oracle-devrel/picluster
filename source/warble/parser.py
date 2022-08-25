@@ -340,11 +340,18 @@ class Parser:
         else:
             self.parseTerm()
 
-            # Can have 0 or more +/- and expressions.
-            while self.checkToken(TokenType.PLUS) or self.checkToken(TokenType.MINUS):
-                self.emitter.emit(self.curToken.text)
+            if self.checkToken(TokenType.CAROT):
+                utils.debug("here")
+                self.emitter.emit('**')
                 self.nextToken()
                 self.parseTerm()
+            else:
+                # Can have 0 or more +/- and expressions.
+                while self.checkToken(TokenType.PLUS) or self.checkToken(TokenType.MINUS):
+                    self.emitter.emit("HERE")
+                    self.emitter.emit(self.curToken.text)
+                    self.nextToken()
+                    self.parseTerm()
 
 
     # term ::= unary {( "/" | "*" ) unary}
@@ -361,6 +368,7 @@ class Parser:
     def parseUnary(self):
         # Optional unary +/-
         if self.checkToken(TokenType.PLUS) or self.checkToken(TokenType.MINUS):
+
             self.emitter.emit(self.curToken.text)
             self.nextToken()
         self.parsePrimary()
@@ -370,6 +378,7 @@ class Parser:
 
     # primary ::= number | ident
     def parsePrimary(self):
+
         if lex.Token.checkIfFunctionWithResult(self.curToken.text):
             self.decIndent()
             self.parseFunction(newline = False)

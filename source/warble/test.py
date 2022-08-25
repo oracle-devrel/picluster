@@ -55,6 +55,10 @@ def main():
              ["varioustest4", "python3 warblecc.py -v \"{LIGHTS(1+1,2,3,4);LOG(\\\"error\\\");LOG(10*99);PRINT(40);PRINT(10+10)}}\"", ""],
 
              ["var1", "python3 warblecc.py -v \"{r=10;PRINT(r)}\"", "10"],
+             ["var2", "python3 warblecc.py -v \"{r=10*2;PRINT(r)}\"", "20"],
+             ["var3", "python3 warblecc.py -v \"{r=10+2;PRINT(r)}\"", "12"],
+             ["var4", "python3 warblecc.py -v \"{r=8^2;PRINT(r)}\"", "64"],
+
 
              ["iftest1", "python3 warblecc.py -v \"{VAR a=10*3;IF(1<2){PRINT(a)}}\"", "30"],
              ["ifelsetest1", "python3 warblecc.py -v \"{VAR a=10*3;IF(a<10){PRINT(a)}ELSE{PRINT(\\\"sonic screwdriver\\\")}}\"", "sonic screwdriver"],
