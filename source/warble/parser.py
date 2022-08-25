@@ -111,25 +111,8 @@ class Parser:
     def parseStatement(self):
         # Check the first token to see what kind of statement this is.
 
-        # "VAR" ident = expression
-        if self.checkToken(TokenType.VAR):
-            self.nextToken()
-            #  Check if ident exists in symbol table. If not, declare it.
-            if self.curToken.text not in self.symbols:
-                self.symbols.add(self.curToken.text)
-
-            self.emitter.emit(self.getIndent() + self.curToken.text + " = ")
-            self.match(TokenType.IDENT)
-            self.match(TokenType.EQ)
-
-            self.parseExpression()
-            self.emitter.emitLine('')
-
-            if self.checkToken(TokenType.SEPARATOR):
-                self.nextToken()
-
         # IF ( comparison ) block
-        elif self.checkToken(TokenType.IF):
+        if self.checkToken(TokenType.IF):
             self.nextToken()
             self.match(TokenType.BEGIN)
             self.emitter.emit(self.getIndent() + "if (")
@@ -196,6 +179,10 @@ class Parser:
         # IDENT ++ | --
         elif self.checkToken(TokenType.IDENT):
             self.emitter.emit(self.getIndent() + self.curToken.text)
+
+            if self.curToken.text not in self.symbols:
+                self.symbols.add(self.curToken.text)
+
             self.nextToken()
             if self.checkToken(TokenType.EQ):
                 self.nextToken()
@@ -205,7 +192,6 @@ class Parser:
                 self.emitter.emitLine("")
             else:
                 self.parseIncOperator()
-
 
         else:
             # Functions

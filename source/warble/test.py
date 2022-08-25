@@ -54,6 +54,7 @@ def main():
              ["playsoundtest3", "python3 warblecc.py -v \"{PLAYSOUND(\\\"http://downloads.bbc.co.uk/doctorwho/sounds/tardis.mp3\\\");}\"", ""],
              ["varioustest4", "python3 warblecc.py -v \"{LIGHTS(1+1,2,3,4);LOG(\\\"error\\\");LOG(10*99);PRINT(40);PRINT(10+10)}}\"", ""],
 
+             ["var1", "python3 warblecc.py -v \"{r=10;PRINT(r)}\"", "10"],
 
              ["iftest1", "python3 warblecc.py -v \"{VAR a=10*3;IF(1<2){PRINT(a)}}\"", "30"],
              ["ifelsetest1", "python3 warblecc.py -v \"{VAR a=10*3;IF(a<10){PRINT(a)}ELSE{PRINT(\\\"sonic screwdriver\\\")}}\"", "sonic screwdriver"],
@@ -70,7 +71,9 @@ def main():
              ["func1", "python3 warblecc.py -v \"{PRINT(ROUND(ACOS(0.0),3))}\"", "1.571"],
              ["func2", "python3 warblecc.py -v \"{PRINT(2*ROUND(ACOS(0.0),3))}\"", "3.142"],
              ["func3", "python3 warblecc.py -v \"{VAR r=ROUND(ACOS(0.0),3);PRINT(r)}\"", "1.571"],
-             ["func4", "python3 warblecc.py -v \"{VAR r=ROUND(ACOS(0.0),3);r=r*2;PRINT(r)}\"", "3.142"]
+             ["func4", "python3 warblecc.py -v \"{r=ROUND(ACOS(0.0),3);r=r*2;PRINT(r)}\"", "3.142"]#,
+
+             #["split1", "python3 warblecc.py -v \"{SPLIT VAR r=ROUND(ACOS(0.0),3);r=r*2;PRINT(r)}\"", "3.142"],
             ]
 
     for test in TESTS:

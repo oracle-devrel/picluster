@@ -30,4 +30,5 @@ def main():
     emitter.writeFile()
     print("Transpiling complete.")
 
-main()
+if __name__ == "__main__":
+    main()
