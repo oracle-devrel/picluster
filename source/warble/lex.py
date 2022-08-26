@@ -252,3 +252,4 @@ class TokenType(enum.Enum):
     # Functions with returns values
     ROUND = 401
     ACOS = 402
+    SETPRECISION = 420

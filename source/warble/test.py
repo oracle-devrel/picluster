@@ -89,6 +89,7 @@ def main():
              ["forx7", "python3 warblecc.py -v \"{k=1;x=2*(4.0/(8*k+1));PRINT(x)}\"", ""],
              ["forx8", "python3 warblecc.py -v \"{x=2^(3+1);PRINT(x)}\"", ""],
              ["forx12", "python3 warblecc.py -v \"{k=1;x=1/16.0^2*(4.0/(8*k+1)-2.0/(8*k+4)-1.0/(8*k+5)-1.0/(8*k+6));PRINT(x)}\"", "0.0005055708180708181"],
+             ["forx13", "python3 warblecc.py -v \"{x=0;SETPRECISION(10);FOR(k=0;k<10;k++){x=x+(1/16.0^k*(4.0/(8*k+1)-2.0/(8*k+4)-1.0/(8*k+5)-1.0/(8*k+6)))};PRINT(x)}\"", ""]
             ]
 
     for test in TESTS:
