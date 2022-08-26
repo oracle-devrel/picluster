@@ -92,6 +92,7 @@ class Parser:
 
 
     def parseBlock(self):
+        utils.debug('parseBlock {}'.format(self.curToken.text))
         if self.checkToken(TokenType.BEGIN_BLOCK):
             self.nextToken()
 
@@ -109,6 +110,7 @@ class Parser:
 
     # One of the following statements...
     def parseStatement(self):
+        utils.debug('parseStatement {}'.format(self.curToken.text))
         # Check the first token to see what kind of statement this is.
 
         # IF ( comparison ) block
@@ -182,12 +184,11 @@ class Parser:
 
             if self.curToken.text not in self.symbols:
                 self.symbols.add(self.curToken.text)
-
             self.nextToken()
+
             if self.checkToken(TokenType.EQ):
                 self.nextToken()
                 self.emitter.emit("=")
-                #self.parseIncOperator()
                 self.parseExpression()
                 self.emitter.emitLine("")
             else:
@@ -202,6 +203,7 @@ class Parser:
                 self.abort("Invalid statement at " + self.curToken.text + " (" + self.curToken.kind.name + ")")
 
     def parseFunction(self, newline = True):
+        utils.debug('parseFunction {}'.format(self.curToken.text))
         # PRINT ( expression | string )
         if self.checkToken(TokenType.PRINT):
             self.nextToken()
@@ -297,6 +299,7 @@ class Parser:
             self.emitter.emitLine("")
 
     def parseIncOperator(self):
+        utils.debug('parseIncOperator {}'.format(self.curToken.text))
         ident = self.prevToken.text
         if self.checkToken(TokenType.PLUSPLUS):
             self.nextToken()
@@ -306,6 +309,7 @@ class Parser:
             self.emitter.emitLine(" = {} - 1".format(ident, ident))
 
     def parseArguments(self, args):
+        utils.debug('parseArguments {}'.format(self.curToken.text))
         for argParserFunction in args:
             argParserFunction()
             if self.checkToken(TokenType.END):
@@ -317,6 +321,7 @@ class Parser:
 
     # comparison ::= expression (("==" | "!=" | ">" | ">=" | "<" | "<=") expression)+
     def parseComparison(self):
+        utils.debug('parseComparison {}'.format(self.curToken.text))
         self.parseExpression()
 
         # Must be at least one comparison operator and another expression.
@@ -331,54 +336,46 @@ class Parser:
             self.parseExpression()
 
 
-    # expression ::= term {( "-" | "+" ) term}
+    # expression ::= term {( "-" | "+" | "^" | "*" | "/" | IDENT | FUNCTION ) term}
     def parseExpression(self):
-        if lex.Token.checkIfFunctionWithResult(self.curToken.text):
-            self.decIndent()
-            self.parseFunction(newline = False)
-            self.incIndent()
-        else:
-            self.parseTerm()
-
-            if self.checkToken(TokenType.CAROT):
-                utils.debug("here")
+        nested_count = 0
+        while (True):
+            if lex.Token.checkIfFunctionWithResult(self.curToken.text):
+                self.decIndent()
+                self.parseFunction(newline = False)
+                self.incIndent()
+            elif self.checkToken(TokenType.CAROT):
                 self.emitter.emit('**')
                 self.nextToken()
-                self.parseTerm()
+            elif self.checkToken(TokenType.PLUS) or self.checkToken(TokenType.MINUS):
+                self.emitter.emit(self.curToken.text)
+                self.nextToken()
+            elif self.checkToken(TokenType.ASTERISK) or self.checkToken(TokenType.SLASH):
+                self.emitter.emit(self.curToken.text)
+                self.nextToken()
+            elif self.checkToken(TokenType.PLUSPLUS) or self.checkToken(TokenType.MINUSMINUS):
+                self.emitter.emit(self.curToken.text)
+                self.nextToken()
+            elif self.checkToken(TokenType.BEGIN):
+                self.emitter.emit(self.curToken.text)
+                self.nextToken()
+                nested_count = nested_count + 1
+            elif self.checkToken(TokenType.END) and nested_count > 0:
+                self.emitter.emit(self.curToken.text)
+                self.nextToken()
+                nested_count = nested_count - 1
+            elif self.checkToken(TokenType.NUMBER) or self.checkToken(TokenType.IDENT):
+                self.parsePrimary()
             else:
-                # Can have 0 or more +/- and expressions.
-                while self.checkToken(TokenType.PLUS) or self.checkToken(TokenType.MINUS):
-                    self.emitter.emit("HERE")
-                    self.emitter.emit(self.curToken.text)
-                    self.nextToken()
-                    self.parseTerm()
+                break
 
-
-    # term ::= unary {( "/" | "*" ) unary}
-    def parseTerm(self):
-        self.parseUnary()
-        # Can have 0 or more *// and expressions.
-        while self.checkToken(TokenType.ASTERISK) or self.checkToken(TokenType.SLASH):
-            self.emitter.emit(self.curToken.text)
-            self.nextToken()
-            self.parseUnary()
-
-
-    # unary ::= ["+" | "-"] primary
-    def parseUnary(self):
-        # Optional unary +/-
-        if self.checkToken(TokenType.PLUS) or self.checkToken(TokenType.MINUS):
-
-            self.emitter.emit(self.curToken.text)
-            self.nextToken()
-        self.parsePrimary()
-        if self.checkToken(TokenType.PLUSPLUS) or self.checkToken(TokenType.MINUSMINUS):
-            self.parseIncOperator()
+        if nested_count > 0:
+            abort("unmatched parentheses")
 
 
     # primary ::= number | ident
     def parsePrimary(self):
-
+        utils.debug('parsePrimary {}'.format(self.curToken.text))
         if lex.Token.checkIfFunctionWithResult(self.curToken.text):
             self.decIndent()
             self.parseFunction(newline = False)
