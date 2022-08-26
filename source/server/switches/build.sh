@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Local version of envionment variables
+source ../../../../../setswitchesenv.sh
+
 docker build -t switches --build-arg SWITCH_USER_ARG="${SWITCH_USER}" \
                          --build-arg SWITCH_PASS_ARG="${SWITCH_PASS}" \
                          --build-arg SWITCHES_BANK1_TOP_ARG="${SWITCHES_BANK1_TOP}" \

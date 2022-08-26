@@ -43,13 +43,6 @@ class Handler(BaseHTTPRequestHandler):
         response = 0
         body = {}
 
-        # # Info
-        # # curl -X POST -H "Content-Type: application/json" -d '{...}' http://<ServerIP>/info
-        # if self.path.upper() == "/info".upper():
-        #     response = 200
-        #     body = {'status': 'true'}
-        #     #TODO Send this 'message' to the database
-
         # GetPorts
         # curl -X POST -H "Content-Type: application/json" -d '{'ip': IP, 'mac': MAC'}' http://<ServerIP>/getport
         if self.path.upper() == "/getport".upper():
