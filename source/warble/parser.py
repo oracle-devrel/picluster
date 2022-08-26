@@ -22,10 +22,12 @@ class Parser:
 
 
     def incIndent(self):
+        utils.debug("incIndent")
         self.indent += 3
 
 
     def decIndent(self):
+        utils.debug("decIndent")
         self.indent -= 3
 
 
@@ -79,7 +81,6 @@ class Parser:
     def program(self):
         self.emitter.headerLine("#!/usr/bin/python3")
         self.emitter.emitLine("import warbleapi")
-        self.emitter.emitLine("from math import acos")
 
         while self.checkToken(TokenType.NEWLINE):
             self.nextToken()
@@ -162,7 +163,6 @@ class Parser:
 
             self.match(TokenType.SEPARATOR)
 
-
             self.emitter.emit(self.getIndent() + "while (")
             self.parseComparison()
 
@@ -170,12 +170,11 @@ class Parser:
             self.emitter.emitLine("):")
             self.incIndent()
 
-            self.emitter.emit(self.getIndent())
-            self.parseExpression()
-            self.emitter.emitLine("")
+            savedCode = self.parseExpression(False)
             self.match(TokenType.END)
 
             self.parseBlock()
+            self.emitter.emitLine(self.getIndent() + savedCode)
             self.decIndent()
 
         # IDENT ++ | --
@@ -238,7 +237,15 @@ class Parser:
 
         elif self.checkToken(TokenType.ACOS):
             self.nextToken()
-            self.emitter.emit(self.getIndent() + "acos(")
+            self.emitter.emit(self.getIndent() + "warbleapi.acos(")
+            self.match(TokenType.BEGIN)
+            self.parseExpression()
+            self.emitter.emit(")")
+            self.match(TokenType.END)
+
+        elif self.checkToken(TokenType.SETPRECISION):
+            self.nextToken()
+            self.emitter.emit(self.getIndent() + "warbleapi.setPrecision(")
             self.match(TokenType.BEGIN)
             self.parseExpression()
             self.emitter.emit(")")
@@ -246,7 +253,7 @@ class Parser:
 
         elif self.checkToken(TokenType.ROUND):
             self.nextToken()
-            self.emitter.emit(self.getIndent() + "round(")
+            self.emitter.emit(self.getIndent() + "warbleapi.round(")
             self.match(TokenType.BEGIN)
             functionTypes = [self.parseExpression, self.parseExpression]
             self.parseArguments(functionTypes);
@@ -329,16 +336,13 @@ class Parser:
             self.emitter.emit(self.curToken.text)
             self.nextToken()
             self.parseExpression()
-        # Can have 0 or more comparison operator and expressions.
-        while self.isComparisonOperator():
-            self.emitter.emit(self.curToken.text)
-            self.nextToken()
-            self.parseExpression()
 
 
     # expression ::= term {( "-" | "+" | "^" | "*" | "/" | IDENT | FUNCTION ) term}
-    def parseExpression(self):
+    def parseExpression(self, print=True):
+        utils.debug('parseExpression {}'.format(self.curToken.text))
         nested_count = 0
+        savedCode = ""
         while (True):
             if lex.Token.checkIfFunctionWithResult(self.curToken.text):
                 self.decIndent()
@@ -353,9 +357,6 @@ class Parser:
             elif self.checkToken(TokenType.ASTERISK) or self.checkToken(TokenType.SLASH):
                 self.emitter.emit(self.curToken.text)
                 self.nextToken()
-            elif self.checkToken(TokenType.PLUSPLUS) or self.checkToken(TokenType.MINUSMINUS):
-                self.emitter.emit(self.curToken.text)
-                self.nextToken()
             elif self.checkToken(TokenType.BEGIN):
                 self.emitter.emit(self.curToken.text)
                 self.nextToken()
@@ -364,7 +365,25 @@ class Parser:
                 self.emitter.emit(self.curToken.text)
                 self.nextToken()
                 nested_count = nested_count - 1
-            elif self.checkToken(TokenType.NUMBER) or self.checkToken(TokenType.IDENT):
+            elif self.checkToken(TokenType.NUMBER):
+                self.parsePrimary()
+            elif self.checkToken(TokenType.IDENT) and self.checkPeek(TokenType.PLUSPLUS):
+                ident = self.curToken.text
+                self.nextToken()
+                self.nextToken()
+                if print:
+                    self.emitter.emitLine("{} = {} + 1".format(ident, ident))
+                else:
+                    savedCode = "{} = {} + 1".format(ident, ident)
+            elif self.checkToken(TokenType.IDENT) and self.checkPeek(TokenType.MINUSMINUS):
+                ident = self.curToken.text
+                self.nextToken()
+                self.nextToken()
+                if print:
+                    self.emitter.emitLine("{} = {} - 1".format(ident, ident))
+                else:
+                    self.emitter.emitLine("{} = {} - 1".format(ident, ident))
+            elif self.checkToken(TokenType.IDENT):
                 self.parsePrimary()
             else:
                 break
@@ -372,6 +391,8 @@ class Parser:
         if nested_count > 0:
             abort("unmatched parentheses")
 
+        if print == False:
+            return savedCode
 
     # primary ::= number | ident
     def parsePrimary(self):

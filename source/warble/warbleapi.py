@@ -63,3 +63,17 @@ def play_sound(url):
         pygame.mixer.init()
         sound = pygame.mixer.Sound('/home/pi/ding.wav')
         playing = sound.play()
+
+
+from decimal import getcontext
+
+def setPrecision(precision):
+    getcontext().prec = precision
+
+from math import acos
+
+def acos(v):
+    return math.acos(v)
+
+def round(v):
+    return math.round(v)
