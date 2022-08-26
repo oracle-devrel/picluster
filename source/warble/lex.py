@@ -73,6 +73,8 @@ class Lexer:
             token = Token(self.curChar, TokenType.ASTERISK)
         elif self.curChar == '/':
             token = Token(self.curChar, TokenType.SLASH)
+        elif self.curChar == '^':
+            token = Token(self.curChar, TokenType.CAROT)
         elif self.curChar == '%':
             token = Token(self.curChar, TokenType.MODULOUS)
         elif self.curChar == '>':
@@ -214,7 +216,6 @@ class TokenType(enum.Enum):
 
     # Keywords.
     #FUN = 101
-    VAR = 105
     IF = 106
     ELSE = 107
     WHILE = 109
@@ -237,6 +238,7 @@ class TokenType(enum.Enum):
     SEPARATOR = 227
     PLUSPLUS = 228
     MINUSMINUS = 229
+    CAROT = 230
 
     # Functions.
     PRINT = 320
