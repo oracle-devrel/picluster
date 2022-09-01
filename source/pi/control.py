@@ -19,6 +19,7 @@ import datetime
 
 
 # pip install playsound
+# pip install psutil
 
 #ip_address = piutils.get_ip()
 ip_address = socket.gethostbyname(socket.gethostname())
@@ -125,30 +126,24 @@ class Handler(BaseHTTPRequestHandler):
         # curl http://<ServerIP>/listapps
         elif self.path.upper() == "/listapps".upper():
             response = 200
-            # Run process, return PID
-            #process = os.popen('echo Returned output')
-            #process = subprocess.Popen(['python3', 'pi.py', '&'])
-            #print(process.pid)
             processes = []
 
             for proc in psutil.process_iter():
-                try:
-                    # Get process name & pid from process object.
-                    processName = proc.name()
-                    processID = proc.pid
-                    print(processName , ' ::: ', processID)
-                    processes.append(processName + ' ::: ' + processID)
-                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                    pass
+               try:
+                   # Get process name & pid from process object.
+                   processName = proc.name()
+                   processID = proc.pid
+                   item = {'name': processName, 'id': processID
+                   processes.append(item)
+               except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                   pass
 
-            body = {'processes': ' '.join(str(e) for e in processes)} #TODO fix this
+            body = {'status': 'true', 'processes': processes)
 
         # Get info
         # curl http://<ServerIP>/getpiinfo
         elif self.path.upper() == "/getpiinfo".upper():
             response = 200
-            #stream = os.popen('python3 info.py') #TODO refactor info.py
-            #output = stream.read()
             body = getInfo()
             body['status'] = 'true'
 
