@@ -225,7 +225,7 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/killpid".upper():
             pid = message['pid']
             response = 200
-            body = {'success': 'true}
+            body = {'success': 'true'}
             process = psutil.Process(pid)
             process.terminate()  #TODO or p.kill()?
 
