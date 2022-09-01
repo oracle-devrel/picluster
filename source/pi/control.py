@@ -12,11 +12,13 @@ import psutil
 from playsound import playsound
 from os.path import exists
 import socket
-import piutils
+#import piutils
 from gpiozero import CPUTemperature
 import re, uuid
 import datetime
 
+
+# pip install playsound
 
 #ip_address = piutils.get_ip()
 ip_address = socket.gethostbyname(socket.gethostname())
