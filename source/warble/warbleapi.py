@@ -1,5 +1,8 @@
 import io
 import os
+import wget
+from pydub import AudioSegment
+from pydub.playback import play
 
 def is_raspberrypi():
     if os.name != 'posix':
@@ -56,14 +59,33 @@ def lights(t, r, g, b):
 
 
 def play_sound(url):
+    # if is_macos():
+    #     media = MediaPlayer(url)
+    #     media.play()
+    # elif is_raspberrypi():
+    #     pygame.mixer.init()
+    #     sound = pygame.mixer.Sound('/home/pi/ding.wav')
+    #     playing = sound.play()
     if is_macos():
-        media = MediaPlayer(url)
-        media.play()
+      media = MediaPlayer(url)
+      media.play()
     elif is_raspberrypi():
-        pygame.mixer.init()
-        sound = pygame.mixer.Sound('/home/pi/ding.wav')
-        playing = sound.play()
-
+#      pygame.mixer.init()
+#      stream = StreamFile(url)
+#      #sound = pygame.mixer.Sound('/home/pi/ding.wav')
+#      #playing = sound.play()
+#      pygame.mixer.load(stream)
+#      pygame.mixer.music.play()
+#      while pygame.mixer.music.get_busy():
+#        sleep(1)
+#       filename = 'sound.mp3'
+#       filename = urllib.request.urlopen(url)
+       filename = wget.download(url)
+       sound = AudioSegment.from_file_using_temporary_files(filename)
+       play(sound)
+       if os.path.exists(filename):
+         print("exists")
+         os.remove(filename)
 
 from decimal import getcontext
 

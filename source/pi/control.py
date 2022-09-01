@@ -9,14 +9,16 @@ import requests
 import os
 import subprocess
 import psutil
-from playsound import playsound
+#import pygame
 from os.path import exists
 import socket
 #import piutils
 from gpiozero import CPUTemperature
 import re, uuid
 import datetime
-
+import wget
+from pydub import AudioSegment
+from pydub.playback import play
 
 # pip install playsound
 # pip install psutil
@@ -29,24 +31,18 @@ port_on_switch = -1
 SERVER_IP = os.getenv('SERVER_IP')
 hostName = "0.0.0.0"
 serverPort = 80
+MAX_MEMORY = 1024.0
+
 
 try:
     data = {'ip': ip_address, 'mac': mac_address}
     headers = {'Content-type': 'application/json'}
-    response = requests.post('http://' + SERVER_IP + '/getport', data = json.dumps(data), headers = headers)
+    response = requests.post('http://' + SERVER_IP + '/registerpi', data = json.dumps(data), headers = headers)
     print(response)
     message = response.json()
-
-    if message["status"] == True:
-        port_on_switch = message["port"]
-
 except socket.error:
     print("error")
 
-
-
-
-MAX_MEMORY = 1024.0
 
 
 def getInfo():
@@ -255,15 +251,17 @@ class Handler(BaseHTTPRequestHandler):
             body = {'success': 'true'}
 
         # Play sound
-        # curl -X POST -H "Content-Type: application/json" -d '{}' http://<ServerIP>/playsound
+        # curl -X POST -H "Content-Type: application/json" -d '{"url": url}' http://<ServerIP>/playsound
         elif self.path.upper() == "/playsound".upper():
             response = 200
             body = {'success': 'true'}
-            filename = 'sound.mp3'
-            if exists(filename):
-                playsound(filename)
-                response = 400
-                body = {'success': 'false'}
+            url = message["url"]
+            filename = wget.download(url)
+            sound = AudioSegment.from_file_using_temporary_files(filename)
+            play(sound)
+            if os.path.exists(filename):
+                print("exists")
+                os.remove(filename)
 
         # Lights
         # curl -X POST -H "Content-Type: application/json" -d '{"pattern":""}' http://<ServerIP>/lights

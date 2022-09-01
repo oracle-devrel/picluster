@@ -18,7 +18,9 @@ hostName = "0.0.0.0"
 serverPort = 80
 
 pi_list = dict([])
-
+port_list = dict([])
+switches = dict([])
+groups = dict([])
 
 # def background_thread(name):
 #     time.sleep(2000)
@@ -135,22 +137,22 @@ class Handler(BaseHTTPRequestHandler):
                 except socket.error:
                     print("error")
 
+
         # RegisterPi
-        # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address, 'mac': mac_address, 'port': port, 'location': location}' http://<ServerIP>/registerpi
+        # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address, 'mac': mac_address}' http://<ServerIP>/registerpi
         # Example:
-        if self.path.upper() == "/registerpi".upper():
+        elif self.path.upper() == "/registerpi".upper():
             response = 200
-            body = {'status': 'true'}
             ip_address = message['ip']
             mac_address = message['mac']
-            port = message['port']
-            location = message['location']
-            pi_list[ip_address] = {'ip': ip_address, 'mac': mac_address, 'port': port, 'location': location, 'time': datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
+            pi_list[ip_address] = {'ip': ip_address, 'mac': mac_address, 'time': datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
+            body = {'status': 'true'}
+
 
         # Remove
         # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address}' http://<ServerIP>/remove
         # Example:
-        if self.path.upper() == "/remove".upper():
+        elif self.path.upper() == "/remove".upper():
             response = 200
             body = {'status': 'true'}
             ip_address = message['ip']
@@ -158,29 +160,141 @@ class Handler(BaseHTTPRequestHandler):
 
 
         # GetPi
-        # curl -X POST -H "Content-Type: application/json" -d '{'location': 'all, front, back, <IP>'}' http://<ServerIP>/getpi
+        # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address}' http://<ServerIP>/getpi
         # Example: curl -X POST -H "Content-Type: application/json" -d "{\"location\":\"all\"}" http://192.168.1.51:8880/getpi
-        if self.path.upper() == "/getpi".upper():
+        elif self.path.upper() == "/getpi".upper():
+            print("getpi")
+            response = 200
+            ip = message['ip']
+            pi = pi_list[ip]
+            body = {'status': 'true', 'pi': pi}
+
+
+        # SetPort
+        # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address, port': port}' http://<ServerIP>/setport
+        # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\", "\port\":"1"}" http://192.168.1.51:8880/setport
+        elif self.path.upper() == "/setport".upper():
+            print("setport")
+            response = 200
+            ip = message["ip"]
+            port = message['port']
+            #if ip in port_list:
+            port_list[ip] = port
+            body = {'status': 'false'}
+
+
+        # GetPort
+        # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address, 'mac': mac_address}' http://<ServerIP>/getport
+        # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\"}" http://192.168.1.51:8880/getport
+        elif self.path.upper() == "/getport".upper():
             print("getport")
             response = 200
-            location = "all"
-            if 'location' in message:
-                location = message['location']
-            #stream = os.popen("{app} --get {arg}".format(app = switches_app, arg = value) #TODO refactor info.py
-            #output = stream.read()
-            #body = {'status': 'true', 'items': output}
-            items = []
-
-            if isValidIp(location):
-                items.append(pi_list[location])
+            ip = message["ip"]
+            if ip in port_list:
+                port = port_list[ip]
+                body = {'status': 'true', 'port': port}
             else:
-                items = []
-                for k, v in pi_list.items():
-                    if location == "all" or location == v["location"]:
-                        items.append(v)
+                body = {'status': 'false'}
+
+
+        # SetSwitch
+        # curl -X POST -H "Content-Type: application/json" -d '{'switch_ip': switch_ip, 'ip': ip_address, 'port': port]]}' http://<ServerIP>/setswitch
+        # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\", "\port\":"1"}" http://192.168.1.51:8880/setswitch
+        elif self.path.upper() == "/addswitch".upper():
+            print("addswitch")
+            response = 200
+            switch_ip = message["switch_ip"]
+            ip = message['ip']
+            port = message['port']
+            pi = {'ip': ip, 'port': port, 'switch_ip': switch_ip}
+
+            if switch_ip not in switches:
+                switches[switch_ip] = []
+
+            found = False
+            for element in switches[switch_ip]:
+                print(element)
+                if ip == element['ip']:
+                    element = pi
+                    found = True
+
+            if not found:
+                switches[switch_ip].append(pi)
+
+            body = {'status': 'true'}
+
+
+        # GetSwitch
+        # curl -X POST -H "Content-Type: application/json" -d '{'switch_ip': switch_ip_address}' http://<ServerIP>/getswitch
+        # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\"}" http://192.168.1.51:8880/getpswitch
+        elif self.path.upper() == "/getswitch".upper():
+            print("getswitch")
+            response = 200
+            switch_ip = message["switch_ip"]
+            items = switches[switch_ip]
+            body = {'status': 'true', 'items': items}
+
+
+        # SetPiGroup
+        # curl -X POST -H "Content-Type: application/json" -d '{'location': 'front, back', 'switch_ip': switch_ip}' http://<ServerIP>/getpigroup
+        # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\"}" http://192.168.1.51:8880/getpigroup
+        elif self.path.upper() == "/setpigroup".upper():
+            # for k, v in pi_list.items():
+            #      if location == "all" or location == v["location"]:
+            #          items.append(v)
+            response = 200
+            switch_ip = message["switch_ip"]
+            location = message['location']
+
+            if location not in groups:
+                groups[location] = []
+
+            groups[location].append(switch_ip)
+            body = {'status': 'true'}
+
+
+        # GetPiGroup
+        # curl -X POST -H "Content-Type: application/json" -d '{'location': 'all, front, back'}' http://<ServerIP>/getpigroup
+        # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\"}" http://192.168.1.51:8880/getpigroup
+        elif self.path.upper() == "/getpigroup".upper():
+            items = []
+            response = 200
+            location = message['location']
+
+            if location == "all":
+                for group in groups:
+                    for switch_ip in groups[group]:
+                        items.append(switch_ip)
+            elif location in groups:
+                for switch_ip in groups[location]:
+                    items.append(switch_ip)
 
             body = {'status': 'true', 'items': items}
 
+#            found = False
+            # for switch in groups[switch_ip]:
+            #     print(element)
+            #     if ip == element['ip']:
+            #         element = pi
+            #         found = True
+
+#            if not found:
+            # print("getpi")
+            # response = 200
+            # location = "all"
+            #
+            # if 'location' in message:
+            #     location = message['location']
+            #
+            # items = []
+    # result['processes'] = []
+    # processes = list()
+    # for process in psutil.process_iter():
+    #    item = process.as_dict(attrs=['name', 'pid', 'cpu_percent'])
+    #    processes.append(item)
+    # result['processes'].append(processes)
+    #
+    # return result
 
         self.send_response(response)
         self.send_header("Content-type", "application/json")
