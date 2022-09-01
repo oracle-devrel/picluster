@@ -264,7 +264,7 @@ class Handler(BaseHTTPRequestHandler):
             filename = 'sound.mp3'
             if exists(filename):
                 playsound(filename)
-                response 400
+                response = 400
                 body = {'success': 'false'}
 
         # Lights
