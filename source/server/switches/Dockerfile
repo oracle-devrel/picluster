@@ -1,7 +1,6 @@
 FROM python:3
 
 
-
 ARG SWITCH_USER_ARG
 ENV SWITCH_USER=$SWITCH_USER_ARG
 
@@ -48,5 +47,5 @@ ENV SWITCHES_APP=$SWITCHES_APP_ARG
 RUN pip install fabric2
 ADD server.py server.py
 ADD switches.py switches.py
-EXPOSE 8888
+EXPOSE 80
 ENTRYPOINT ["python3", "-u", "server.py"]
