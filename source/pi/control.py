@@ -138,7 +138,7 @@ class Handler(BaseHTTPRequestHandler):
                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                    pass
 
-            body = {'status': 'true', 'processes': processes)
+            body = {'status': 'true', 'processes': processes}
 
         # Get info
         # curl http://<ServerIP>/getpiinfo
