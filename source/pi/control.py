@@ -25,6 +25,10 @@ ip_address = socket.gethostbyname(socket.gethostname())
 mac_address = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
 port_on_switch = -1
 
+SERVER_IP = os.getenv('SERVER_IP')
+hostName = "0.0.0.0"
+serverPort = 80
+
 try:
     data = {'ip': ip_address, 'mac': mac_address}
     headers = {'Content-type': 'application/json'}
@@ -39,10 +43,7 @@ except socket.error:
     print("error")
 
 
-#SERVER_IP = '172.20.0.10'
-SERVER_IP = os.getenv('SERVER_IP')
-hostName = "0.0.0.0"
-serverPort = 80
+
 
 MAX_MEMORY = 1024.0
 
