@@ -140,7 +140,7 @@ class Handler(BaseHTTPRequestHandler):
 
         # RegisterPi
         # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address, 'mac': mac_address}' http://<ServerIP>/registerpi
-        # Example:
+        # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\", \"mac\":\"ABCD\"}" http://192.168.1.51:8880/registerpi
         elif self.path.upper() == "/registerpi".upper():
             response = 200
             ip_address = message['ip']
@@ -161,7 +161,7 @@ class Handler(BaseHTTPRequestHandler):
 
         # GetPi
         # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address}' http://<ServerIP>/getpi
-        # Example: curl -X POST -H "Content-Type: application/json" -d "{\"location\":\"all\"}" http://192.168.1.51:8880/getpi
+        # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\"}" http://192.168.1.51:8880/getpi
         elif self.path.upper() == "/getpi".upper():
             print("getpi")
             response = 200

@@ -22,27 +22,51 @@ from pydub.playback import play
 
 # pip install playsound
 # pip install psutil
+# pip install wget
 
-#ip_address = piutils.get_ip()
-ip_address = socket.gethostbyname(socket.gethostname())
+
+def getEnvironmentVariable(name):
+    if name in os.environ:
+        return os.getenv(name)
+    else:
+        print("Error: environment variable {name} does not exist.".format(name = name))
+        quit()
+
+
+def get_ip():
+    st = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        st.connect(('10.255.255.255', 1))
+        IP = st.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        st.close()
+    return IP
+
+
+ip_address = get_ip()
 mac_address = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
 port_on_switch = -1
 
-SERVER_IP = os.getenv('SERVER_IP')
+
+SERVER_IP = getEnvironmentVariable('SERVER_IP')
 hostName = "0.0.0.0"
-serverPort = 80
+piServerPort = 8880
 MAX_MEMORY = 1024.0
 
 
 try:
     data = {'ip': ip_address, 'mac': mac_address}
+    print(data)
     headers = {'Content-type': 'application/json'}
-    response = requests.post('http://' + SERVER_IP + '/registerpi', data = json.dumps(data), headers = headers)
+    url = 'http://{}/registerpi'.format(SERVER_IP).rstrip()
+    response = requests.post(url, data = json.dumps(data), headers = headers)
     print(response)
     message = response.json()
-except socket.error:
+except socket.error as e:
     print("error")
-
+    print(e)
 
 
 def getInfo():
@@ -290,8 +314,8 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
   """Handle requests in a separate thread."""
 
 if __name__ == "__main__":
-  webServer = ThreadedHTTPServer((hostName, serverPort), Handler)
-  print("Server started http://%s:%s" % (hostName, serverPort))
+  webServer = ThreadedHTTPServer((hostName, piServerPort), Handler)
+  print("Server started http://%s:%s" % (hostName, piServerPort))
 
   try:
       webServer.serve_forever()
