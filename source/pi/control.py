@@ -9,40 +9,64 @@ import requests
 import os
 import subprocess
 import psutil
-from playsound import playsound
+#import pygame
 from os.path import exists
 import socket
-import piutils
+#import piutils
 from gpiozero import CPUTemperature
 import re, uuid
 import datetime
+import wget
+from pydub import AudioSegment
+from pydub.playback import play
+
+# pip install playsound
+# pip install psutil
+# pip install wget
 
 
-#ip_address = piutils.get_ip()
-ip_address = socket.gethostbyname(socket.gethostname())
+def getEnvironmentVariable(name):
+    if name in os.environ:
+        return os.getenv(name)
+    else:
+        print("Error: environment variable {name} does not exist.".format(name = name))
+        quit()
+
+
+def get_ip():
+    st = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        st.connect(('10.255.255.255', 1))
+        IP = st.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        st.close()
+    return IP
+
+
+ip_address = get_ip()
 mac_address = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
 port_on_switch = -1
 
+
+SERVER_IP = getEnvironmentVariable('SERVER_IP')
+hostName = "0.0.0.0"
+piServerPort = 8880
+MAX_MEMORY = 1024.0
+
+
 try:
     data = {'ip': ip_address, 'mac': mac_address}
+    print(data)
     headers = {'Content-type': 'application/json'}
-    response = requests.post('http://' + SERVER_IP + '/getport', data = json.dumps(data), headers = headers)
+    url = 'http://{}/registerpi'.format(SERVER_IP).rstrip()
+    response = requests.post(url, data = json.dumps(data), headers = headers)
     print(response)
     message = response.json()
-
-    if message["status"] == True:
-        port_on_switch = message["port"]
-
-except socket.error:
+except socket.error as e:
     print("error")
-
-
-#SERVER_IP = '172.20.0.10'
-SERVER_IP = os.getenv('SERVER_IP')
-hostName = "0.0.0.0"
-serverPort = 80
-
-MAX_MEMORY = 1024.0
+    print(e)
 
 
 def getInfo():
@@ -122,30 +146,24 @@ class Handler(BaseHTTPRequestHandler):
         # curl http://<ServerIP>/listapps
         elif self.path.upper() == "/listapps".upper():
             response = 200
-            # Run process, return PID
-            #process = os.popen('echo Returned output')
-            #process = subprocess.Popen(['python3', 'pi.py', '&'])
-            #print(process.pid)
             processes = []
 
             for proc in psutil.process_iter():
-                try:
-                    # Get process name & pid from process object.
-                    processName = proc.name()
-                    processID = proc.pid
-                    print(processName , ' ::: ', processID)
-                    processes.append(processName + ' ::: ' + processID)
-                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                    pass
+               try:
+                   # Get process name & pid from process object.
+                   processName = proc.name()
+                   processID = proc.pid
+                   item = {'name': processName, 'id': processID}
+                   processes.append(item)
+               except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                   pass
 
-            body = {'processes': ' '.join(str(e) for e in processes)} #TODO fix this
+            body = {'status': 'true', 'processes': processes}
 
         # Get info
         # curl http://<ServerIP>/getpiinfo
         elif self.path.upper() == "/getpiinfo".upper():
             response = 200
-            #stream = os.popen('python3 info.py') #TODO refactor info.py
-            #output = stream.read()
             body = getInfo()
             body['status'] = 'true'
 
@@ -225,7 +243,7 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/killpid".upper():
             pid = message['pid']
             response = 200
-            body = {'success': 'true}
+            body = {'success': 'true'}
             process = psutil.Process(pid)
             process.terminate()  #TODO or p.kill()?
 
@@ -257,15 +275,17 @@ class Handler(BaseHTTPRequestHandler):
             body = {'success': 'true'}
 
         # Play sound
-        # curl -X POST -H "Content-Type: application/json" -d '{}' http://<ServerIP>/playsound
+        # curl -X POST -H "Content-Type: application/json" -d '{"url": url}' http://<ServerIP>/playsound
         elif self.path.upper() == "/playsound".upper():
             response = 200
             body = {'success': 'true'}
-            filename = 'sound.mp3'
-            if exists(filename):
-                playsound(filename)
-                response 400
-                body = {'success': 'false'}
+            url = message["url"]
+            filename = wget.download(url)
+            sound = AudioSegment.from_file_using_temporary_files(filename)
+            play(sound)
+            if os.path.exists(filename):
+                print("exists")
+                os.remove(filename)
 
         # Lights
         # curl -X POST -H "Content-Type: application/json" -d '{"pattern":""}' http://<ServerIP>/lights
@@ -294,8 +314,8 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
   """Handle requests in a separate thread."""
 
 if __name__ == "__main__":
-  webServer = ThreadedHTTPServer((hostName, serverPort), Handler)
-  print("Server started http://%s:%s" % (hostName, serverPort))
+  webServer = ThreadedHTTPServer((hostName, piServerPort), Handler)
+  print("Server started http://%s:%s" % (hostName, piServerPort))
 
   try:
       webServer.serve_forever()
