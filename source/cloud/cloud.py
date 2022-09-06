@@ -15,7 +15,7 @@ from threading import RLock
 # pip install requests
 
 hostName = "0.0.0.0"
-serverPort = 8880
+serverPort = 80
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -38,8 +38,8 @@ class Handler(BaseHTTPRequestHandler):
         # curl http://<ServerIP>/nextbatch
         elif self.path.upper() == "/nextbatch".upper():
             response = 200
-            os.system('sudo shutdown now')
             body = {'status': 'true', 'items': {'username': 'joe', 'code': '\"{r=ROUND(ACOS(0.0),3);r=r*2;PRINT(r)}\""'}}
+            print(body)
 
         self.send_response(response)
         self.send_header("Content-type", "application/json")
