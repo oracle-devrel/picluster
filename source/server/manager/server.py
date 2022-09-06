@@ -175,19 +175,28 @@ class Handler(BaseHTTPRequestHandler):
             body = {'status': 'true'}
             command = message['command']
 
-            for k, v in pi_list.items():
-                try:
-                    data = {'command': command}
-                    headers = {'Content-type': 'application/json'}
-                    response = requests.post('http://' + v['ip'] + '/runnow' + command, data = json.dumps(data), headers = headers)
-                    print(response)
+            keysList = []
 
-                    if response.json()["status"] == True:
-                        print("thumbs up")
+            with lock:
+                keysList = list(pi_list.keys())
 
-                except socket.error:
-                    print("error")
+            for key in keysList:
+                pi = pi_list[key]
+                print(pi)
 
+                if 'ip' in pi:
+                    try:
+                        ip_address = pi['ip']
+                        data = {'command': command}
+                        headers = {'Content-type': 'application/json'}
+                        response = requests.post('http://' + ip_address + ':8880/runnow', data = json.dumps(data), headers = headers)
+                        print(response)
+
+                        if response.json()["status"] == 'true':
+                            print("success")
+
+                    except socket.error:
+                        print("error")
 
         # RegisterPi
         # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address, 'mac': mac_address}' http://<ServerIP>/registerpi
