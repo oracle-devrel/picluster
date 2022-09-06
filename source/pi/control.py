@@ -9,20 +9,18 @@ import requests
 import os
 import subprocess
 import psutil
-#import pygame
 from os.path import exists
 import socket
-#import piutils
-from gpiozero import CPUTemperature
 import re, uuid
 import datetime
-import wget
+
+from gpiozero import CPUTemperature
+
 from pydub import AudioSegment
 from pydub.playback import play
+import wget
 
-# pip install playsound
 # pip install psutil
-# pip install wget
 
 
 def getEnvironmentVariable(name):
@@ -96,6 +94,9 @@ def getInfo():
     # Temperature
     temperature_info = CPUTemperature().temperature
     temperature = "{:.4f}'C'".format(temperature_info)
+    #proc = subprocess.Popen(["python3", "gettemp.py"], stdout=subprocess.PIPE)
+    #(output, err) = proc.communicate()
+    #temperature = output.decode('utf-8').strip()
 
     # Output Info
     result["CPU"] = cpu
@@ -286,6 +287,7 @@ class Handler(BaseHTTPRequestHandler):
             if os.path.exists(filename):
                 print("exists")
                 os.remove(filename)
+            #os.system('python3 playsound.py --url {}'.format(url))
 
         # Lights
         # curl -X POST -H "Content-Type: application/json" -d '{"pattern":""}' http://<ServerIP>/lights
