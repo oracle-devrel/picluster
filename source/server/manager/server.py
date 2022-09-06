@@ -11,40 +11,69 @@ import os
 #import psutil
 import socket
 from datetime import datetime
+from threading import RLock
+
 
 # pip install requests
 
 hostName = "0.0.0.0"
 serverPort = 80
 
+lock = RLock()
 pi_list = dict([])
 port_list = dict([])
 switches = dict([])
 groups = dict([])
 
-# def background_thread(name):
-#     time.sleep(2000)
-#     print("")
-#
-#     for k, v in pi_list.items():
-#         time.sleep(10)
-#
-#         if v != None:
-#             updated_pi = None
-#
-#             try:
-#                 headers = {'Content-type': 'application/json'}
-#                 response = requests.post('http://' + v['ip'] + '/ping', headers = headers)
-#                 print(response)
-#
-#                 if response.json()["status"] == 'pong':
-#                     print("thumbs up")
-#                     updated_pi = {'ip': v['ip'], 'mac': v['mac'], 'time': datetime.now()}
-#
-#             except socket.error:
-#                 print("error")
-#
-#             pi_list[k] = updated_pi
+SLEEP = 20
+
+def register_pi(ip_address, mac_address):
+    with lock:
+        pi_list[ip_address] = {'ip': ip_address, 'mac': mac_address, 'time': datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
+
+def remove_pi(ip_address):
+    with lock:
+        pi_list.update({ip_address:{}})
+
+
+def collect():
+    keysList = []
+
+    with lock:
+        keysList = list(pi_list.keys())
+
+    for key in keysList:
+        pi = pi_list[key]
+        success = False
+        print(pi)
+
+        if 'ip' in pi:
+            try:
+                ip_address = pi['ip']
+                mac_address = pi['mac']
+                headers = {'Content-type': 'application/json'}
+                response = requests.get('http://' + ip_address + ':8880/ping', headers = headers)
+                print(response)
+
+                if response.json()["status"] == 'pong':
+                    print("thumbs up")
+                    success = True
+                    register_pi(ip_address, mac_address)
+
+            except socket.error:
+                print("error")
+
+        if not success:
+            remove_pi(key)
+
+
+def background_thread(name):
+    time.sleep(SLEEP)
+    print("start pi collection")
+
+    while True:
+        time.sleep(SLEEP)
+        collect()
 
 
 def isValidIp(address):
@@ -98,6 +127,28 @@ class Handler(BaseHTTPRequestHandler):
             #     except socket.error:
             #         print("error")
 
+            keysList = []
+
+            with lock:
+                keysList = list(pi_list.keys())
+
+            for key in keysList:
+                pi = pi_list[key]
+                print(pi)
+
+                if 'ip' in pi:
+                    try:
+                        ip_address = pi['ip']
+                        headers = {'Content-type': 'application/json'}
+                        response = requests.get('http://' + ip_address + ':8880/shutdown', headers = headers)
+                        print(response)
+
+                        if response.json()["status"] == 'true':
+                            print("shutting down {}".format(ip_address))
+
+                    except socket.error:
+                        print("error")
+
         self.send_response(response)
         self.send_header("Content-type", "application/json")
         self.end_headers()
@@ -145,7 +196,8 @@ class Handler(BaseHTTPRequestHandler):
             response = 200
             ip_address = message['ip']
             mac_address = message['mac']
-            pi_list[ip_address] = {'ip': ip_address, 'mac': mac_address, 'time': datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
+            #pi_list[ip_address] = {'ip': ip_address, 'mac': mac_address, 'time': datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
+            register_pi(ip_address, mac_address)
             body = {'status': 'true'}
 
 
@@ -156,7 +208,7 @@ class Handler(BaseHTTPRequestHandler):
             response = 200
             body = {'status': 'true'}
             ip_address = message['ip']
-            pi_list[ip_address] = None
+            remove_pi(ip_address)
 
 
         # GetPi
@@ -165,9 +217,16 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/getpi".upper():
             print("getpi")
             response = 200
-            ip = message['ip']
-            pi = pi_list[ip]
-            body = {'status': 'true', 'pi': pi}
+
+            if 'ip' in message:
+                ip = message['ip']
+                pi = pi_list[ip]
+                if pi == None:
+                    body = {'status': 'false'}
+                else:
+                    body = {'status': 'true', 'pi': pi}
+            else:
+                body = {'status': 'true', 'items': pi_list}
 
 
         # SetPort
@@ -239,9 +298,6 @@ class Handler(BaseHTTPRequestHandler):
         # curl -X POST -H "Content-Type: application/json" -d '{'location': 'front, back', 'switch_ip': switch_ip}' http://<ServerIP>/getpigroup
         # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\"}" http://192.168.1.51:8880/getpigroup
         elif self.path.upper() == "/setpigroup".upper():
-            # for k, v in pi_list.items():
-            #      if location == "all" or location == v["location"]:
-            #          items.append(v)
             response = 200
             switch_ip = message["switch_ip"]
             location = message['location']
@@ -249,7 +305,9 @@ class Handler(BaseHTTPRequestHandler):
             if location not in groups:
                 groups[location] = []
 
-            groups[location].append(switch_ip)
+            if switch_ip not in groups[location]:
+                groups[location].append(switch_ip)
+
             body = {'status': 'true'}
 
 
@@ -308,8 +366,8 @@ if __name__ == "__main__":
   webServer = ThreadedHTTPServer((hostName, serverPort), Handler)
   print("Server started http://%s:%s" % (hostName, serverPort))
 
-  # thread = threading.Thread(target=background_thread, args=(1,))
-  # thread.start()
+  thread = threading.Thread(target=background_thread, args=(1,))
+  thread.start()
 
   try:
       webServer.serve_forever()

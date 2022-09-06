@@ -140,6 +140,7 @@ class Handler(BaseHTTPRequestHandler):
         # Ping
         # curl http://<ServerIP>/ping
         elif self.path.upper() == "/ping".upper():
+            print("ping pong")
             response = 200
             body = {'status': 'pong'}
 
