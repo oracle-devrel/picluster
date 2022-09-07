@@ -302,10 +302,13 @@ class Handler(BaseHTTPRequestHandler):
         # curl -X POST -H "Content-Type: application/json" -d '{"code":"{...}"}' http://<ServerIP>/code
         elif self.path.upper() == "/code".upper():
             code = message['code']
+            username = message['username']
+            url = "" #TODO URL to post warble to
             response = 200
             body = {'success': 'true'}
-            #TODO do something with the code
-            os.system('python3 warblecc.py \"' + code + '"')
+            #os.system('python3 warblecc.py \"' + code + '"')
+            os.system('bash warble.sh {} \"{}\" {}'.format(username, code, url)
+
 
         self.send_response(response)
         self.send_header("Content-type", "application/json")
