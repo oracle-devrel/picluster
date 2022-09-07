@@ -38,9 +38,12 @@ José Pereda
 Gerrit Grunwald
 Igor Luccic
 Mike Brave
+Shaun Smith
 Stuart Coggins
 Wojciech Pluta
 Tim Clegg
 Jason Lowe
 Bogdan Farca
 Eli Schilling
+Rodrigo Bruno
+Yassine Lafkih
