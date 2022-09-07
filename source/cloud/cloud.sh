@@ -1,3 +1,3 @@
 #!/bin/sh
 
-sudo python3 cloud.py
+sudo python3 cloud.py &
