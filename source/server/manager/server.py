@@ -286,14 +286,14 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/getpi".upper():
             print("getpi")
             response = 200
+            body = {'status': 'false'}
 
             if 'ip' in message:
                 ip = message['ip']
-                pi = pi_list[ip]
-                if pi == None:
-                    body = {'status': 'false'}
-                else:
-                    body = {'status': 'true', 'pi': pi}
+                if len(pi_list) > 0:
+                    pi = pi_list[ip]
+                    if pi:
+                        body = {'status': 'true', 'pi': pi}
             else:
                 body = {'status': 'true', 'items': pi_list}
 
