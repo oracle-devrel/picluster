@@ -267,8 +267,23 @@ class Handler(BaseHTTPRequestHandler):
             mac_address = message['mac']
             #pi_list[ip_address] = {'ip': ip_address, 'mac': mac_address, 'time': datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
             register_pi(ip_address, mac_address)
-            body = {'status': 'true'}
+            port = -1
 
+            if ip in port_list:
+                port = port_list[ip]
+
+            found = False
+            switch_ip = -1
+
+            # for switch in switches:
+            #     print(switch)
+            #     for pi in switch:
+            #         if ip == pi['ip']:
+            #             switch_ip = pi['switch_ip']
+            #             found = True
+            #             break
+
+            body = {'status': 'true', 'port': port, 'switch_ip': switch_ip}
 
         # Remove
         # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address}' http://<ServerIP>/remove

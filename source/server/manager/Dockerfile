@@ -1,3 +1,5 @@
+# docker pull ghcr.io/graalvm/graalvm-ce:ol8-java17-22
+
 FROM ghcr.io/graalvm/graalvm-ce:ol8-java17-22
 
 RUN microdnf install patch
