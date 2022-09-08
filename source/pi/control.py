@@ -76,7 +76,7 @@ def background_thread(name):
             print("error")
             attempts = attempts - 1
 
-# Register Pi
+# Register Pi and get the port
 try:
     data = {'ip': ip_address, 'mac': mac_address}
     print(data)
@@ -84,9 +84,21 @@ try:
     url = 'http://{}/registerpi'.format(SERVER_IP).rstrip()
     response = requests.post(url, data = json.dumps(data), headers = headers)
     print(response)
+
+    data = {'ip': ip_address}
+    url = 'http://{}/getport'.format(SERVER_IP).rstrip()
+    response = requests.post(url, data = json.dumps(data), headers = headers)
+    print(response)
     message = response.json()
     if message["status"] == 'true':
         port_on_switch = message["port"]
+
+    url = 'http://{}/getpiswitch'.format(SERVER_IP).rstrip()
+    response = requests.post(url, data = json.dumps(data), headers = headers)
+    print(response)
+    message = response.json()
+    if message["status"] == 'true':
+        switch_ip = message["switch_ip"]
 
 except socket.error as e:
     print("error")
@@ -136,7 +148,7 @@ def getInfo():
     result["ip"] = ip_address
     result["mac"] = mac_address
     result['port'] = port_on_switch #TODO create a unique port 1-48
-    #result['switch_ip'] = ??? #TODO get switch IP address
+    result['switch_ip'] = switch_ip #TODO get switch IP address
 
     result['processes'] = []
     processes = list()
