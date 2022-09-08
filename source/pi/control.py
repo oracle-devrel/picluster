@@ -42,18 +42,41 @@ def get_ip():
         st.close()
     return IP
 
-
 ip_address = get_ip()
 mac_address = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
 port_on_switch = -1
-
+switch_ip = -1
 
 SERVER_IP = getEnvironmentVariable('SERVER_IP')
+AR_SERVER_URL = getEnvironmentVariable('AR_SERVER_URL')
 hostName = "0.0.0.0"
 piServerPort = 8880
 MAX_MEMORY = 1024.0
 
+SLEEP = 20
 
+def background_thread(name):
+    time.sleep(SLEEP)
+    print("start sending AR data")
+    attempts = 3
+
+    while attempts > 0:
+        time.sleep(SLEEP)
+        try:
+            data = getInfo()
+            headers = {'Content-type': 'application/json'}
+            response = requests.post(AR_SERVER_URL, data = json.dumps(data), headers = headers)
+            print(response)
+            message = response.json()
+
+            if message["status"] == 'True':
+                print("success")
+
+        except socket.error:
+            print("error")
+            attempts = attempts - 1
+
+# Register Pi
 try:
     data = {'ip': ip_address, 'mac': mac_address}
     print(data)
@@ -62,6 +85,9 @@ try:
     response = requests.post(url, data = json.dumps(data), headers = headers)
     print(response)
     message = response.json()
+    if message["status"] == 'true':
+        port_on_switch = message["port"]
+
 except socket.error as e:
     print("error")
     print(e)
@@ -109,7 +135,8 @@ def getInfo():
     result["CPUTemperature"] = temperature
     result["ip"] = ip_address
     result["mac"] = mac_address
-    result['port'] = port_on_switch
+    result['port'] = port_on_switch #TODO create a unique port 1-48
+    #result['switch_ip'] = ??? #TODO get switch IP address
 
     result['processes'] = []
     processes = list()
@@ -303,12 +330,22 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/code".upper():
             code = message['code']
             username = message['username']
-            url = "" #TODO URL to post warble to
-            response = 200
-            body = {'success': 'true'}
-            #os.system('python3 warblecc.py \"' + code + '"')
-            os.system('bash warble.sh {} \"{}\" {}'.format(username, code, url)
 
+            if 'url' in message:
+                url = message["url"]
+                response = 200
+                body = {'success': 'true'}
+                #os.system('python3 warblecc.py \"' + code + '"')
+                os.system('bash warble.sh {} \"{}\" {}'.format(username, code, url)
+            else:
+                response = 200
+                body = {'success': 'true'}
+                #os.system('python3 warblecc.py \"' + code + '"')
+                #os.system('bash warble.sh {} \"{}\" {}'.format(username, code)
+                #TODO call warble.sh without url and get the return value here.
+                stream = os.popen('bash warble.sh {} \"{}\" {}'.format(username, code, "")
+                output = stream.read()
+                body = {'output': output}
 
         self.send_response(response)
         self.send_header("Content-type", "application/json")
@@ -322,6 +359,9 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 if __name__ == "__main__":
   webServer = ThreadedHTTPServer((hostName, piServerPort), Handler)
   print("Server started http://%s:%s" % (hostName, piServerPort))
+
+  thread = threading.Thread(target=background_thread, args=(1,))
+  thread.start()
 
   try:
       webServer.serve_forever()

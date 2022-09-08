@@ -15,11 +15,13 @@ if test -f $PROGRAM; then
 
   JSON=""
   printf -v JSON "$JSON_TEMPLATE" "$USERNAME" "$CODE" "$OUTPUT"
-  echo $JSON
+  #echo $JSON
 
   rm $PROGRAM
 
-  curl -X POST -H "Content-Type: application/json" -d $JSON $URL
-fi
+  if [ -n "$var" ]
+  then
+    curl -X POST -H "Content-Type: application/json" -d $JSON $URL
+  fi
 
 popd
