@@ -20,10 +20,11 @@ hostName = "0.0.0.0"
 serverPort = 80
 
 lock = RLock()
-pi_list = dict([])
-port_list = dict([])
-switches = dict([])
-groups = dict([])
+pi_list = dict([])     # IP -> IP, MAC, time
+port_list = dict([])   # IP -> port
+switches = dict([])    # SWITCH_IP -> [IP]
+groups = dict([])      # Groups of Switch IP Addresses
+pi_switches = dict([]) # IP -> Switch IP
 
 SLEEP = 20
 
@@ -251,8 +252,9 @@ class Handler(BaseHTTPRequestHandler):
                         headers = {'Content-type': 'application/json'}
                         response = requests.post('http://' + ip_address + ':8880/runnow', data = json.dumps(data), headers = headers)
                         print(response)
+                        message = response.json()
 
-                        if response.json()["status"] == 'true':
+                        if message["status"] == 'true':
                             print("success")
 
                     except socket.error:
@@ -267,23 +269,7 @@ class Handler(BaseHTTPRequestHandler):
             mac_address = message['mac']
             #pi_list[ip_address] = {'ip': ip_address, 'mac': mac_address, 'time': datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
             register_pi(ip_address, mac_address)
-            port = -1
-
-            if ip in port_list:
-                port = port_list[ip]
-
-            found = False
-            switch_ip = -1
-
-            # for switch in switches:
-            #     print(switch)
-            #     for pi in switch:
-            #         if ip == pi['ip']:
-            #             switch_ip = pi['switch_ip']
-            #             found = True
-            #             break
-
-            body = {'status': 'true', 'port': port, 'switch_ip': switch_ip}
+            body = {'status': 'true'}
 
         # Remove
         # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address}' http://<ServerIP>/remove
@@ -301,7 +287,6 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/getpi".upper():
             print("getpi")
             response = 200
-            body = {'status': 'false'}
 
             if 'ip' in message:
                 ip = message['ip']
@@ -323,33 +308,35 @@ class Handler(BaseHTTPRequestHandler):
             port = message['port']
             #if ip in port_list:
             port_list[ip] = port
-            body = {'status': 'false'}
+            body = {'status': 'true'}
 
 
         # GetPort
-        # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address, 'mac': mac_address}' http://<ServerIP>/getport
+        # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address}' http://<ServerIP>/getport
         # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\"}" http://192.168.1.51:8880/getport
         elif self.path.upper() == "/getport".upper():
             print("getport")
             response = 200
-            ip = message["ip"]
-            if ip in port_list:
-                port = port_list[ip]
-                body = {'status': 'true', 'port': port}
+            body = {'status': 'false'}
+
+            if 'ip' in message:
+                ip = message["ip"]
+                if ip in port_list:
+                    port = port_list[ip]
+                    body = {'status': 'true', 'port': port}
             else:
-                body = {'status': 'false'}
+                body = {'status': 'true', 'items': port_list}
 
 
         # SetSwitch
-        # curl -X POST -H "Content-Type: application/json" -d '{'switch_ip': switch_ip, 'ip': ip_address, 'port': port]]}' http://<ServerIP>/setswitch
+        # curl -X POST -H "Content-Type: application/json" -d '{'switch_ip': switch_ip, 'ip': ip_address}' http://<ServerIP>/setswitch
         # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\", "\port\":"1"}" http://192.168.1.51:8880/setswitch
         elif self.path.upper() == "/addswitch".upper():
             print("addswitch")
             response = 200
             switch_ip = message["switch_ip"]
             ip = message['ip']
-            port = message['port']
-            pi = {'ip': ip, 'port': port, 'switch_ip': switch_ip}
+            pi = {'ip': ip, 'switch_ip': switch_ip}
 
             if switch_ip not in switches:
                 switches[switch_ip] = []
@@ -363,6 +350,8 @@ class Handler(BaseHTTPRequestHandler):
 
             if not found:
                 switches[switch_ip].append(pi)
+
+            pi_switches[ip] = switch_ip
 
             body = {'status': 'true'}
 
@@ -412,6 +401,20 @@ class Handler(BaseHTTPRequestHandler):
                     items.append(switch_ip)
 
             body = {'status': 'true', 'items': items}
+
+
+        # GetPiSwitch
+        # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address}' http://<ServerIP>/getpiswitch
+        # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\"}" http://192.168.1.51:8880/getpiswitch
+        elif self.path.upper() == "/getpiswitch".upper():
+            print("getport")
+            response = 200
+            ip = message["ip"]
+            if ip in pi_switches:
+                switch_ip = pi_switches[ip]
+                body = {'status': 'true', 'switch_ip': switch_ip}
+            else:
+                body = {'status': 'false'}
 
 #            found = False
             # for switch in groups[switch_ip]:

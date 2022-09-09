@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#source setenv.sh
+#source setpienv.sh
 
 export SERVER_IP=""
 export AR_SERVER_URL=""

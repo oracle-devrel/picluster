@@ -21,7 +21,7 @@ if test -f $PROGRAM; then
 
   if [ -n "$var" ]
   then
-    curl -X POST -H "Content-Type: application/json" -d $JSON $URL
+    curl -X POST -H "Content-Type: application/json" -d "$JSON" $URL
   fi
 
 popd
