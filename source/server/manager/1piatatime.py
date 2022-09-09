@@ -1,15 +1,12 @@
 #!/usr/bin/python3
 
-from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
 import json
-from socketserver import ThreadingMixIn
-import threading
 import requests
 import os
 import socket
 from datetime import datetime
-from threading import RLock
+import argparse
 
 # This script will shut down one pi at a time so we can get the port it is attached to
 
@@ -57,6 +54,13 @@ def sendShutdown(ip):
     except socket.error:
         print("error")
 
+argparser = argparse.ArgumentParser(description='Get Port of Pi on switch')
+argparser.add_argument('-b', '--bank', required=True, help='Bank of Pi Example: -b BANK1_1')
+argparser.add_argument('-l', '--location', required=True, help='front/back Example: -l front')
+args = argparser.parse_args()
+bank = args.bank
+location = args.location
+
 
 pi_list = getAllPi()
 
@@ -76,6 +80,6 @@ for ip in pi_list:
         current_list = getAllPi()
         pi = current_list[ip]
         if 'ip' not in pi:
-            print("register \"front\" $BANK1_1 \"{}\" \"PORT\"".format(ip))
+            print("register \"{}}\" ${} \"{}\" \"PORT\"".format(location, bank, ip))
             input("Press Enter to continue...")
             break
