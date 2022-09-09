@@ -348,14 +348,14 @@ class Handler(BaseHTTPRequestHandler):
                 response = 200
                 body = {'success': 'true'}
                 #os.system('python3 warblecc.py \"' + code + '"')
-                os.system('bash warble.sh {} \"{}\" {}'.format(username, code, url)
+                os.system('bash warble.sh {} \"{}\" {}'.format(username, code, url))
             else:
                 response = 200
                 body = {'success': 'true'}
                 #os.system('python3 warblecc.py \"' + code + '"')
                 #os.system('bash warble.sh {} \"{}\" {}'.format(username, code)
                 #TODO call warble.sh without url and get the return value here.
-                stream = os.popen('bash warble.sh {} \"{}\" {}'.format(username, code, "")
+                stream = os.popen('bash warble.sh {} \"{}\" {}'.format(username, code, ""))
                 output = stream.read()
                 body = {'output': output}
 
