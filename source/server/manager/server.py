@@ -252,8 +252,9 @@ class Handler(BaseHTTPRequestHandler):
                         headers = {'Content-type': 'application/json'}
                         response = requests.post('http://' + ip_address + ':8880/runnow', data = json.dumps(data), headers = headers)
                         print(response)
+                        message = response.json()
 
-                        if response.json()["status"] == 'true':
+                        if message["status"] == 'true':
                             print("success")
 
                     except socket.error:
@@ -286,7 +287,6 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/getpi".upper():
             print("getpi")
             response = 200
-            body = {'status': 'false'}
 
             if 'ip' in message:
                 ip = message['ip']
