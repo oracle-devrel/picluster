@@ -66,12 +66,10 @@ def background_thread(name):
             data = getInfo()
             headers = {'Content-type': 'application/json'}
             response = requests.post(AR_SERVER_URL, data = json.dumps(data), headers = headers)
-            print(response)
-            message = response.json()
+            print("sent pi data".format(response))
 
-            if message["status"] == 'True':
-                print("success")
-
+            if response == "<Response [200]>":
+                print("pi data sent successfuly")
         except socket.error:
             print("error")
             attempts = attempts - 1
