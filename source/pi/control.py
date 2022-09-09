@@ -53,15 +53,17 @@ hostName = "0.0.0.0"
 piServerPort = 8880
 MAX_MEMORY = 1024.0
 
-SLEEP = 20
+SLEEP = 5 # optimum time to sleep
+MAX_SLEEP = 50
+SLEEP_INC = 0.05
+sleep = SLEEP
 
 def background_thread(name):
-    time.sleep(SLEEP)
+    time.sleep(sleep)
     print("start sending AR data")
-    attempts = 3
 
-    while attempts > 0:
-        time.sleep(SLEEP)
+    while True:
+        time.sleep(sleep)
         try:
             data = getInfo()
             headers = {'Content-type': 'application/json'}
@@ -70,9 +72,12 @@ def background_thread(name):
 
             if response == "<Response [200]>":
                 print("pi data sent successfuly")
+                if sleep > SLEEP:
+                    sleep = sleep - SLEEP_INC
         except socket.error:
             print("error")
-            attempts = attempts - 1
+            if sleep <= MAX_SLEEP:
+                sleep = sleep + SLEEP_INC
 
 # Register Pi and get the port
 try:
