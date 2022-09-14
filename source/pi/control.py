@@ -58,6 +58,8 @@ MAX_SLEEP = 50
 SLEEP_INC = 0.05
 sleep = SLEEP
 
+data = {}
+
 def background_thread(name):
     time.sleep(sleep)
     print("start sending AR data")
@@ -159,6 +161,8 @@ def getInfo():
        item = process.as_dict(attrs=['name', 'pid', 'cpu_percent'])
        processes.append(item)
     result['processes'].append(processes)
+
+    result['data'] = data
 
     return result
 
@@ -354,13 +358,26 @@ class Handler(BaseHTTPRequestHandler):
                 os.system('bash warble.sh {} \"{}\" {}'.format(username, code, url))
             else:
                 response = 200
-                body = {'success': 'true'}
                 #os.system('python3 warblecc.py \"' + code + '"')
                 #os.system('bash warble.sh {} \"{}\" {}'.format(username, code)
                 #TODO call warble.sh without url and get the return value here.
                 stream = os.popen('bash warble.sh {} \"{}\" {}'.format(username, code, ""))
                 output = stream.read()
-                body = {'output': output}
+                body = {'success': 'true', 'output': output}
+
+        # Set Data
+        # curl -X POST -H "Content-Type: application/json" -d '{}' http://<ServerIP>/setdata
+        elif self.path.upper() == "/setdata".upper():
+            response = 200
+            data = message
+            body = {'success': 'true'}
+
+        # Get Data
+        # curl -X POST -H "Content-Type: application/json" -d '{}' http://<ServerIP>/getdata
+        elif self.path.upper() == "/setdata".upper():
+            response = 200
+            body = {'success': 'true', 'data': data}
+
 
         self.send_response(response)
         self.send_header("Content-type", "application/json")

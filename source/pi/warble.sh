@@ -6,7 +6,7 @@ URL=$3
 
 pushd ../warble
 
-OUTPUT=$(python3 warblecc.py ${CODE})
+OUTPUT=$(python3 warblecc.py --username ${USERNAME} ${CODE})
 PROGRAM="out.py"
 OUTPUT=$(python3 $PROGRAM)
 

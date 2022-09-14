@@ -17,6 +17,9 @@ class Parser:
         self.prevToken = None
         self.curToken = None
         self.peekToken = None
+
+        self.username = None
+
         self.nextToken()
         self.nextToken()    # Call this twice to initialize current and peek.
 
@@ -38,6 +41,10 @@ class Parser:
             count = count + 1
             result += ' '
         return result
+
+
+    def setUsername(self, v):
+        self.username = v
 
 
     # Return true if the current token matches.
@@ -84,6 +91,9 @@ class Parser:
 
         while self.checkToken(TokenType.NEWLINE):
             self.nextToken()
+
+        if self.username is not None:
+            self.emitter.emitLine("setUsername({})".format(self.username))
 
         self.emitter.emitLine("def main():")
         self.incIndent()
