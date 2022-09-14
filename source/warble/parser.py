@@ -312,6 +312,47 @@ class Parser:
             self.match(TokenType.END)
             self.emitter.emit(self.getIndent() + "warbleapi.play_sound(\"" + url + "\")\n")
 
+        # SETDATA ( string, string )
+        elif self.checkToken(TokenType.SETDATA):
+            self.nextToken()
+            self.match(TokenType.BEGIN)
+            name = self.curToken.text
+            self.match(TokenType.STRING)
+            value = self.curToken.text
+            self.match(TokenType.IDENT)
+            self.match(TokenType.END)
+            self.emitter.emit(self.getIndent() + "warbleapi.setData({}, {})\n".format(name, value))
+
+        # GETDATA ( string )
+        elif self.checkToken(TokenType.GETDATA):
+            self.nextToken()
+            self.match(TokenType.BEGIN)
+            name = self.curToken.text
+            self.match(TokenType.STRING)
+            self.match(TokenType.END)
+            self.emitter.emit(self.getIndent() + "warbleapi.getData({})\n".format(name))
+
+        # SAVE ( string, string )
+        elif self.checkToken(TokenType.SAVE):
+            self.nextToken()
+            self.match(TokenType.BEGIN)
+            name = self.curToken.text
+            self.match(TokenType.STRING)
+            value = self.curToken.text
+            self.match(TokenType.IDENT)
+            self.match(TokenType.END)
+            self.emitter.emit(self.getIndent() + "warbleapi.save({}, {})\n".format(name, value))
+
+        # LOAD ( string )
+    elif self.checkToken(TokenType.LOAD):
+            self.nextToken()
+            self.match(TokenType.BEGIN)
+            name = self.curToken.text
+            self.match(TokenType.STRING)
+            self.match(TokenType.END)
+            self.emitter.emit(self.getIndent() + "warbleapi.load({})\n".format(name))
+
+
         if newline == True:
             self.emitter.emitLine("")
 

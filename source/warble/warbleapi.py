@@ -143,9 +143,9 @@ def round(value):
     return math.round(value)
 
 
-def setdata(value):
+def setData(name, value):
     try:
-        data = value
+        data = {'name': getUsername() + name, 'value': value}
         headers = {'Content-type': 'application/json'}
         response = requests.post('http://' + IP_ADDRESS + ':8880/setdata', data = json.dumps(data), headers = headers)
         message = response.json()
@@ -155,14 +155,16 @@ def setdata(value):
         print("error")
 
 
-def getdata(value):
+def getData(name):
     try:
-        data = value
+        data = {'name': getUsername() + name}
         headers = {'Content-type': 'application/json'}
         response = requests.post('http://' + IP_ADDRESS + ':8880/getdata', data = json.dumps(data), headers = headers)
         message = response.json()
         if message["status"] == 'true':
             print('success')
+            if 'value' in message:
+                return message['value']
     except socket.error:
         print("error")
 
