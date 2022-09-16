@@ -38,7 +38,7 @@ class Handler(BaseHTTPRequestHandler):
         # curl http://<ServerIP>/nextbatch
         elif self.path.upper() == "/nextbatch".upper():
             response = 200
-            body = {'status': 'true', 'items': {'username': 'joe', 'code': '\"{r=ROUND(ACOS(0.0),3);r=r*2;PRINT(r)}\""'}}
+            body = {'status': 'true', 'code': '\"{r=ROUND(ACOS(0.0),3);r=r*2;PRINT(r)}\""', 'tweet': {'username': 'joe', 'description':'TODO', 'location':'TODO', 'following':'TODO', 'followers':'TODO', 'totaltweets':'TODO', 'retweetcount':'TODO', 'text':'TODO', 'hashtags':'TODO', 'created_at':'TODO'}}
             print(body)
 
         self.send_response(response)

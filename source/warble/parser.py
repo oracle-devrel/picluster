@@ -350,7 +350,7 @@ class Parser:
             name = self.curToken.text
             self.match(TokenType.STRING)
             self.match(TokenType.END)
-            self.emitter.emit(self.getIndent() + "warbleapi.load({})\n".format(name))
+            self.emitter.emit(self.getIndent() + "warbleapi.getData({})\n".format(name))
 
 
         if newline == True:

@@ -348,14 +348,15 @@ class Handler(BaseHTTPRequestHandler):
         # curl -X POST -H "Content-Type: application/json" -d '{"code":"{...}"}' http://<ServerIP>/code
         elif self.path.upper() == "/code".upper():
             code = message['code']
-            username = message['username']
+            tweet = message['tweet']
+            username = items['username']
 
             if 'url' in message:
                 url = message["url"]
                 response = 200
                 body = {'success': 'true'}
                 #os.system('python3 warblecc.py \"' + code + '"')
-                os.system('bash warble.sh {} \"{}\" {}'.format(username, code, url))
+                os.system('bash warble.sh {} \"{}\" {} {}'.format(username, code, url, tweet))
             else:
                 response = 200
                 #os.system('python3 warblecc.py \"' + code + '"')

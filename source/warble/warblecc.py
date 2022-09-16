@@ -14,8 +14,7 @@ def main():
     argparser = argparse.ArgumentParser(description='Warble is a Twitter Code Compiler')
     argparser.add_argument('code', type=str, help='Tweet')
     argparser.add_argument('-v', '--verbose', action='store_true')
-    argparser.add_argument('-u', '--username', required=False, help='username')
-    argparser.add_argument('-t', '--testname', required=False, help='Test to run')
+    argparser.add_argument('-u', '--username', required=False, help='data paylod')
     args = argparser.parse_args()
     input = args.code
     username = args.username
