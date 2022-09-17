@@ -30,6 +30,13 @@ def getEnvironmentVariable(name):
         print("Error: environment variable {name} does not exist.".format(name = name))
         quit()
 
+def getEnvironmentVariable(name, default):
+    if name in os.environ:
+        return os.getenv(name)
+    else:
+        print("Error: environment variable {name} does not exist.".format(name = name))
+        return default
+
 
 def get_ip():
     st = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -49,6 +56,7 @@ switch_ip = -1
 
 SERVER_IP = getEnvironmentVariable('SERVER_IP')
 AR_SERVER_URL = getEnvironmentVariable('AR_SERVER_URL')
+WARBLE_URL = getEnvironmentVariable('WARBLE_URL', None)
 hostName = "0.0.0.0"
 piServerPort = 8880
 MAX_MEMORY = 1024.0
@@ -351,12 +359,12 @@ class Handler(BaseHTTPRequestHandler):
             tweet = message['tweet']
             username = items['username']
 
-            if 'url' in message:
+            if WARBLE_URL is not None:
                 url = message["url"]
                 response = 200
                 body = {'success': 'true'}
                 #os.system('python3 warblecc.py \"' + code + '"')
-                os.system('bash warble.sh {} \"{}\" {} {}'.format(username, code, url, tweet))
+                os.system('bash warble.sh {} \"{}\" {} {}'.format(username, code, WARBLE_URL, tweet))
             else:
                 response = 200
                 #os.system('python3 warblecc.py \"' + code + '"')
