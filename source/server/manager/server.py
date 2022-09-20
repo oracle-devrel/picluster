@@ -70,10 +70,17 @@ def collect():
             remove_pi(key)
 
 
-def background_thread(name):
+def ping_background_thread(name):
     time.sleep(SLEEP)
     print("start pi collection")
+    while True:
+        time.sleep(SLEEP)
+        collect()
 
+
+def warble_background_thread(name):
+    time.sleep(SLEEP)
+    print("start pi collection")
     while True:
         time.sleep(SLEEP)
             try:
@@ -91,15 +98,6 @@ def background_thread(name):
 
             except socket.error:
                 print("error with server {}", WARBLE_SERVER)
-
-def warble_background_thread(name):
-    time.sleep(SLEEP)
-    print("start pi collection")
-
-    while True:
-        time.sleep(SLEEP)
-        collect()
-
 
 def isValidIp(address):
     digits = address.split(".")
@@ -477,7 +475,10 @@ if __name__ == "__main__":
   webServer = ThreadedHTTPServer((hostName, serverPort), Handler)
   print("Server started http://%s:%s" % (hostName, serverPort))
 
-  thread = threading.Thread(target=background_thread, args=(1,))
+  thread = threading.Thread(target=ping_background_thread, args=(1,))
+  thread.start()
+
+  thread = threading.Thread(target=warble_background_thread, args=(1,))
   thread.start()
 
   try:
