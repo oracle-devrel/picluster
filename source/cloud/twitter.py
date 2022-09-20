@@ -27,6 +27,7 @@ def printtweetdata(n, ith_tweet):
         print(f"Retweet Count:{ith_tweet[6]}")
         print(f"Tweet Text:{ith_tweet[7]}")
         print(f"Hashtags Used:{ith_tweet[8]}")
+        print(f"Created At:{ith_tweet[9]}")
 
 
 # function to perform data extraction
@@ -41,7 +42,8 @@ def scrape(words, date_since, numtweet):
                                    'totaltweets',
                                    'retweetcount',
                                    'text',
-                                   'hashtags'])
+                                   'hashtags',
+                                   'created_at'])
 
         # We are using .Cursor() to search
         # through twitter for the required tweets.
@@ -73,6 +75,7 @@ def scrape(words, date_since, numtweet):
                 totaltweets = tweet.user.statuses_count
                 retweetcount = tweet.retweet_count
                 hashtags = tweet.entities['hashtags']
+                created_at = tweet.created_at
 
                 # Retweets can be distinguished by
                 # a retweeted_status attribute,
@@ -92,7 +95,7 @@ def scrape(words, date_since, numtweet):
                 ith_tweet = [username, description,
                              location, following,
                              followers, totaltweets,
-                             retweetcount, text, hashtext]
+                             retweetcount, text, hashtext, created_at]
                 db.loc[len(db)] = ith_tweet
 
                 # Function call to print tweet data on screen

@@ -2,6 +2,10 @@
 
 FROM ghcr.io/graalvm/graalvm-ce:ol8-java17-22
 
+
+ARG WARBLE_SERVER_ARG
+ENV WARBLE_SERVER=$WARBLE_SERVER_ARG
+
 RUN microdnf install patch
 RUN gu install python
 RUN graalpython -m venv graalenv

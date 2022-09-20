@@ -3,18 +3,19 @@
 USERNAME=$1
 CODE=$2
 URL=$3
+TWEET=$4
 
 pushd ../warble
 
-OUTPUT=$(python3 warblecc.py ${CODE})
+OUTPUT=$(python3 warblecc.py --username ${USERNAME} ${CODE})
 PROGRAM="out.py"
 OUTPUT=$(python3 $PROGRAM)
 
 if test -f $PROGRAM; then
-  JSON_TEMPLATE='{ "username": "%s", "code": "%s", "output": "%s" }'
+  JSON_TEMPLATE='{ "tweet": "%s", "code": "%s", "output": "%s" }'
 
   JSON=""
-  printf -v JSON "$JSON_TEMPLATE" "$USERNAME" "$CODE" "$OUTPUT"
+  printf -v JSON "$JSON_TEMPLATE" "$TWEET" "$CODE" "$OUTPUT"
   #echo $JSON
 
   rm $PROGRAM

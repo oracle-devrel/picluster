@@ -248,8 +248,12 @@ class TokenType(enum.Enum):
 
     PLAYSOUND = 390
     LIGHTS = 391
+    SETDATA = 292
+    SAVE = 293
 
     # Functions with returns values
     ROUND = 401
     ACOS = 402
     SETPRECISION = 420
+    GETDATA = 421
+    LOAD = 422

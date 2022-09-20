@@ -30,6 +30,13 @@ def getEnvironmentVariable(name):
         print("Error: environment variable {name} does not exist.".format(name = name))
         quit()
 
+def getEnvironmentVariable(name, default):
+    if name in os.environ:
+        return os.getenv(name)
+    else:
+        print("Error: environment variable {name} does not exist.".format(name = name))
+        return default
+
 
 def get_ip():
     st = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -49,19 +56,24 @@ switch_ip = -1
 
 SERVER_IP = getEnvironmentVariable('SERVER_IP')
 AR_SERVER_URL = getEnvironmentVariable('AR_SERVER_URL')
+WARBLE_URL = getEnvironmentVariable('WARBLE_URL', None)
 hostName = "0.0.0.0"
 piServerPort = 8880
 MAX_MEMORY = 1024.0
 
-SLEEP = 20
+SLEEP = 5 # optimum time to sleep
+MAX_SLEEP = 50
+SLEEP_INC = 0.05
+sleep = SLEEP
+
+data = {}
 
 def background_thread(name):
-    time.sleep(SLEEP)
+    time.sleep(sleep)
     print("start sending AR data")
-    attempts = 3
 
-    while attempts > 0:
-        time.sleep(SLEEP)
+    while True:
+        time.sleep(sleep)
         try:
             data = getInfo()
             headers = {'Content-type': 'application/json'}
@@ -70,9 +82,12 @@ def background_thread(name):
 
             if response == "<Response [200]>":
                 print("pi data sent successfuly")
+                if sleep > SLEEP:
+                    sleep = sleep - SLEEP_INC
         except socket.error:
             print("error")
-            attempts = attempts - 1
+            if sleep <= MAX_SLEEP:
+                sleep = sleep + SLEEP_INC
 
 # Register Pi and get the port
 try:
@@ -154,6 +169,8 @@ def getInfo():
        item = process.as_dict(attrs=['name', 'pid', 'cpu_percent'])
        processes.append(item)
     result['processes'].append(processes)
+
+    result['data'] = data
 
     return result
 
@@ -339,23 +356,37 @@ class Handler(BaseHTTPRequestHandler):
         # curl -X POST -H "Content-Type: application/json" -d '{"code":"{...}"}' http://<ServerIP>/code
         elif self.path.upper() == "/code".upper():
             code = message['code']
-            username = message['username']
+            tweet = message['tweet']
+            username = items['username']
 
-            if 'url' in message:
+            if WARBLE_URL is not None:
                 url = message["url"]
                 response = 200
                 body = {'success': 'true'}
                 #os.system('python3 warblecc.py \"' + code + '"')
-                os.system('bash warble.sh {} \"{}\" {}'.format(username, code, url))
+                os.system('bash warble.sh {} \"{}\" {} {}'.format(username, code, WARBLE_URL, tweet))
             else:
                 response = 200
-                body = {'success': 'true'}
                 #os.system('python3 warblecc.py \"' + code + '"')
                 #os.system('bash warble.sh {} \"{}\" {}'.format(username, code)
                 #TODO call warble.sh without url and get the return value here.
                 stream = os.popen('bash warble.sh {} \"{}\" {}'.format(username, code, ""))
                 output = stream.read()
-                body = {'output': output}
+                body = {'success': 'true', 'output': output}
+
+        # Set Data
+        # curl -X POST -H "Content-Type: application/json" -d '{}' http://<ServerIP>/setdata
+        elif self.path.upper() == "/setdata".upper():
+            response = 200
+            data = message
+            body = {'success': 'true'}
+
+        # Get Data
+        # curl -X POST -H "Content-Type: application/json" -d '{}' http://<ServerIP>/getdata
+        elif self.path.upper() == "/setdata".upper():
+            response = 200
+            body = {'success': 'true', 'data': data}
+
 
         self.send_response(response)
         self.send_header("Content-type", "application/json")

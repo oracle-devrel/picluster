@@ -1,8 +1,42 @@
 import io
 import os
+import socket
+import requests
 #import wget
 # from pydub import AudioSegment
 # from pydub.playback import play
+
+def getEnvironmentVariable(name):
+    if name in os.environ:
+        return os.getenv(name)
+    else:
+        print("Error: environment variable {name} does not exist.".format(name = name))
+        quit()
+
+
+def get_ip():
+    st = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        st.connect(('10.255.255.255', 1))
+        IP = st.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        st.close()
+    return IP
+
+
+IP_ADDRESS = get_ip()
+SERVER_IP = getEnvironmentVariable('SERVER_IP')
+USERNAME = ''
+
+
+def setUsername(v):
+    USERNAME = v
+
+def getUsername():
+    return USERNAME
+
 
 def is_raspberrypi():
     if os.name != 'posix':
@@ -20,10 +54,12 @@ def is_raspberrypi():
         pass
     return False
 
+
 def is_macos():
   return False
   if sys.platform == "darwin":
     return True
+
 
 def get_os():
   if is_raspberrypi():
@@ -88,15 +124,74 @@ def play_sound(url):
 #          os.remove(filename)
     os.system('python3 playsound.py --url {}'.format(url))
 
+
 from decimal import getcontext
+
 
 def setPrecision(precision):
     getcontext().prec = precision
 
+
 from math import acos
 
-def acos(v):
-    return math.acos(v)
 
-def round(v):
-    return math.round(v)
+def acos(value):
+    return math.acos(value)
+
+
+def round(value):
+    return math.round(value)
+
+
+def setData(name, value):
+    try:
+        data = {'name': getUsername() + name, 'value': value}
+        headers = {'Content-type': 'application/json'}
+        response = requests.post('http://' + IP_ADDRESS + ':8880/setdata', data = json.dumps(data), headers = headers)
+        message = response.json()
+        if message["status"] == 'true':
+            print('success')
+    except socket.error:
+        print("error")
+
+
+def getData(name):
+    try:
+        data = {'name': getUsername() + name}
+        headers = {'Content-type': 'application/json'}
+        response = requests.post('http://' + IP_ADDRESS + ':8880/getdata', data = json.dumps(data), headers = headers)
+        message = response.json()
+        if message["status"] == 'true':
+            print('success')
+            if 'value' in message:
+                return message['value']
+    except socket.error:
+        print("error")
+
+
+def save(name, value):
+    try:
+        data = {'name': getUsername() + name, 'value': value}
+        headers = {'Content-type': 'application/json'}
+        response = requests.post('http://' + SERVER_IP + '/save', data = json.dumps(data), headers = headers)
+        message = response.json()
+        if message["status"] == 'true':
+            print('success')
+    except socket.error:
+        print("error")
+
+
+def load(name):
+    try:
+        data = {'name': getUsername() + name}
+        headers = {'Content-type': 'application/json'}
+        response = requests.post('http://' + SERVER_IP + '/load', data = json.dumps(data), headers = headers)
+        message = response.json()
+        if message["status"] == 'true':
+            print('success')
+            if 'value' in message:
+                return message['value']
+    except socket.error:
+        print("error")
+
+    return None

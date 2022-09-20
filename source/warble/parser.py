@@ -17,6 +17,9 @@ class Parser:
         self.prevToken = None
         self.curToken = None
         self.peekToken = None
+
+        self.username = None
+
         self.nextToken()
         self.nextToken()    # Call this twice to initialize current and peek.
 
@@ -38,6 +41,10 @@ class Parser:
             count = count + 1
             result += ' '
         return result
+
+
+    def setUsername(self, v):
+        self.username = v
 
 
     # Return true if the current token matches.
@@ -84,6 +91,9 @@ class Parser:
 
         while self.checkToken(TokenType.NEWLINE):
             self.nextToken()
+
+        if self.username is not None:
+            self.emitter.emitLine("setUsername({})".format(self.username))
 
         self.emitter.emitLine("def main():")
         self.incIndent()
@@ -301,6 +311,47 @@ class Parser:
             self.match(TokenType.STRING)
             self.match(TokenType.END)
             self.emitter.emit(self.getIndent() + "warbleapi.play_sound(\"" + url + "\")\n")
+
+        # SETDATA ( string, string )
+        elif self.checkToken(TokenType.SETDATA):
+            self.nextToken()
+            self.match(TokenType.BEGIN)
+            name = self.curToken.text
+            self.match(TokenType.STRING)
+            value = self.curToken.text
+            self.match(TokenType.IDENT)
+            self.match(TokenType.END)
+            self.emitter.emit(self.getIndent() + "warbleapi.setData({}, {})\n".format(name, value))
+
+        # GETDATA ( string )
+        elif self.checkToken(TokenType.GETDATA):
+            self.nextToken()
+            self.match(TokenType.BEGIN)
+            name = self.curToken.text
+            self.match(TokenType.STRING)
+            self.match(TokenType.END)
+            self.emitter.emit(self.getIndent() + "warbleapi.getData({})\n".format(name))
+
+        # SAVE ( string, string )
+        elif self.checkToken(TokenType.SAVE):
+            self.nextToken()
+            self.match(TokenType.BEGIN)
+            name = self.curToken.text
+            self.match(TokenType.STRING)
+            value = self.curToken.text
+            self.match(TokenType.IDENT)
+            self.match(TokenType.END)
+            self.emitter.emit(self.getIndent() + "warbleapi.save({}, {})\n".format(name, value))
+
+        # LOAD ( string )
+    elif self.checkToken(TokenType.LOAD):
+            self.nextToken()
+            self.match(TokenType.BEGIN)
+            name = self.curToken.text
+            self.match(TokenType.STRING)
+            self.match(TokenType.END)
+            self.emitter.emit(self.getIndent() + "warbleapi.getData({})\n".format(name))
+
 
         if newline == True:
             self.emitter.emitLine("")
