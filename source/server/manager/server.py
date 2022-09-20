@@ -28,6 +28,8 @@ pi_switches = dict([]) # IP -> Switch IP
 
 SLEEP = 20
 
+WARBLE_SERVER = os.getenv('WARBLE_SERVER')
+
 def register_pi(ip_address, mac_address):
     with lock:
         pi_list[ip_address] = {'ip': ip_address, 'mac': mac_address, 'time': datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
@@ -69,6 +71,28 @@ def collect():
 
 
 def background_thread(name):
+    time.sleep(SLEEP)
+    print("start pi collection")
+
+    while True:
+        time.sleep(SLEEP)
+            try:
+                headers = {'Content-type': 'application/json'}
+                response = requests.get('http://' + WARBLE_SERVER + '/nextbatch', headers = headers)
+                print(response)
+                message = response.json()
+
+                if message["status"] == 'true':
+                    print("thumbs up")
+                    code = message['code']
+                    tweet = message['tweet']
+                    username = tweet['username']
+                    #TODO find pi, send it to pi
+
+            except socket.error:
+                print("error with server {}", WARBLE_SERVER)
+
+def warble_background_thread(name):
     time.sleep(SLEEP)
     print("start pi collection")
 
