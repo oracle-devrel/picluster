@@ -70,10 +70,17 @@ def collect():
             remove_pi(key)
 
 
-def background_thread(name):
+def ping_background_thread(name):
     time.sleep(SLEEP)
     print("start pi collection")
+    while True:
+        time.sleep(SLEEP)
+        collect()
 
+
+def warble_background_thread(name):
+    time.sleep(SLEEP)
+    print("start pi collection")
     while True:
         time.sleep(SLEEP)
             try:
@@ -91,15 +98,6 @@ def background_thread(name):
 
             except socket.error:
                 print("error with server {}", WARBLE_SERVER)
-
-def warble_background_thread(name):
-    time.sleep(SLEEP)
-    print("start pi collection")
-
-    while True:
-        time.sleep(SLEEP)
-        collect()
-
 
 def isValidIp(address):
     digits = address.split(".")
@@ -352,9 +350,9 @@ class Handler(BaseHTTPRequestHandler):
                 body = {'status': 'true', 'items': port_list}
 
 
-        # SetSwitch
-        # curl -X POST -H "Content-Type: application/json" -d '{'switch_ip': switch_ip, 'ip': ip_address}' http://<ServerIP>/setswitch
-        # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\", "\port\":"1"}" http://192.168.1.51:8880/setswitch
+        # AddSwitch
+        # curl -X POST -H "Content-Type: application/json" -d '{'switch_ip': switch_ip, 'ip': ip_address}' http://<ServerIP>/addswitch
+        # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\", "\port\":"1"}" http://192.168.1.51:8880/addswitch
         elif self.path.upper() == "/addswitch".upper():
             print("addswitch")
             response = 200
@@ -477,7 +475,10 @@ if __name__ == "__main__":
   webServer = ThreadedHTTPServer((hostName, serverPort), Handler)
   print("Server started http://%s:%s" % (hostName, serverPort))
 
-  thread = threading.Thread(target=background_thread, args=(1,))
+  thread = threading.Thread(target=ping_background_thread, args=(1,))
+  thread.start()
+
+  thread = threading.Thread(target=warble_background_thread, args=(1,))
   thread.start()
 
   try:
