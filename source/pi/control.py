@@ -20,7 +20,11 @@ from pydub import AudioSegment
 from pydub.playback import play
 import wget
 
+#source setpienv.sh
+#python3 control.py
+
 # pip install psutil
+
 
 
 def getEnvironmentVariable(name):

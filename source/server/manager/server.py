@@ -350,9 +350,9 @@ class Handler(BaseHTTPRequestHandler):
                 body = {'status': 'true', 'items': port_list}
 
 
-        # SetSwitch
-        # curl -X POST -H "Content-Type: application/json" -d '{'switch_ip': switch_ip, 'ip': ip_address}' http://<ServerIP>/setswitch
-        # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\", "\port\":"1"}" http://192.168.1.51:8880/setswitch
+        # AddSwitch
+        # curl -X POST -H "Content-Type: application/json" -d '{'switch_ip': switch_ip, 'ip': ip_address}' http://<ServerIP>/addswitch
+        # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\", "\port\":"1"}" http://192.168.1.51:8880/addswitch
         elif self.path.upper() == "/addswitch".upper():
             print("addswitch")
             response = 200
