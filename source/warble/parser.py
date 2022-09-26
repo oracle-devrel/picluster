@@ -344,7 +344,7 @@ class Parser:
             self.emitter.emit(self.getIndent() + "warbleapi.save({}, {})\n".format(name, value))
 
         # LOAD ( string )
-    elif self.checkToken(TokenType.LOAD):
+        elif self.checkToken(TokenType.LOAD):
             self.nextToken()
             self.match(TokenType.BEGIN)
             name = self.curToken.text

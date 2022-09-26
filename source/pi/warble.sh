@@ -7,7 +7,24 @@ TWEET=$4
 
 pushd ../warble
 
-OUTPUT=$(python3 warblecc.py --username ${USERNAME} ${CODE})
+GRAALVISOR_IP=127.0.0.1
+# Checking if the default port of GraalVisor is in use.
+GRAALVISOR_UP=$(sudo lsof -i -P -n | grep LISTEN | grep 8080)
+if [ -z "$GRAALVISOR_UP" ]
+then
+  # GraalVisor is down, we have to launch it and register the function.
+  source ../pi/graalvisor_functions.sh
+  check_environment
+  start_polyglot_svm &> "$GRAALVISOR_PATH".log &
+  sleep 1
+  register_function
+fi
+
+# Prepare code for GraalVisor - escape double quotes correctly.
+CODE=$(echo "$CODE" | sed 's/"/\\\\"/g')
+CODE=$(echo "$CODE" | sed 's/"/\\"/g')
+
+curl -s -X POST $GRAALVISOR_IP:8080 -H 'Content-Type: application/json' -d $'{"name":"warble","async":"false","arguments":"[\'-v\',\'--username\',\'\\"'$USERNAME$'\\"\',\''$CODE$'\']"}'
 PROGRAM="out.py"
 OUTPUT=$(python3 $PROGRAM)
 
