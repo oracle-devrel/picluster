@@ -73,6 +73,7 @@ sleep = SLEEP
 data = {}
 
 def background_thread(name):
+    global sleep
     time.sleep(sleep)
     print("start sending AR data")
 
