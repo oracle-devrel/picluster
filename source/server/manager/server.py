@@ -83,21 +83,21 @@ def warble_background_thread(name):
     print("start pi collection")
     while True:
         time.sleep(SLEEP)
-            try:
-                headers = {'Content-type': 'application/json'}
-                response = requests.get('http://' + WARBLE_SERVER + '/nextbatch', headers = headers)
-                print(response)
-                message = response.json()
+        try:
+            headers = {'Content-type': 'application/json'}
+            response = requests.get('http://' + WARBLE_SERVER + '/nextbatch', headers = headers)
+            print(response)
+            message = response.json()
 
-                if message["status"] == 'true':
-                    print("thumbs up")
-                    code = message['code']
-                    tweet = message['tweet']
-                    username = tweet['username']
-                    #TODO find pi, send it to pi
+            if message["status"] == 'true':
+                print("thumbs up")
+                code = message['code']
+                tweet = message['tweet']
+                username = tweet['username']
+                #TODO find pi, send it to pi
 
-            except socket.error:
-                print("error with server {}", WARBLE_SERVER)
+        except socket.error:
+            print("error with server {}", WARBLE_SERVER)
 
 def isValidIp(address):
     digits = address.split(".")
