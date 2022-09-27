@@ -14,7 +14,7 @@ import socket
 import re, uuid
 import datetime
 
-from gpiozero import CPUTemperature
+#from gpiozero import CPUTemperature
 
 from pydub import AudioSegment
 from pydub.playback import play
@@ -148,8 +148,9 @@ def getInfo():
     disk_percent = str(disk.percent) + '%'
 
     # Temperature
-    temperature_info = CPUTemperature().temperature
-    temperature = "{:.4f}'C'".format(temperature_info)
+    #temperature_info = CPUTemperature().temperature
+    #temperature = "{:.4f}'C'".format(temperature_info)
+    temperature = ""
     #proc = subprocess.Popen(["python3", "gettemp.py"], stdout=subprocess.PIPE)
     #(output, err) = proc.communicate()
     #temperature = output.decode('utf-8').strip()
