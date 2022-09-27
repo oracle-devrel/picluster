@@ -138,6 +138,18 @@ from math import acos
 def acos(value):
     return math.acos(value)
 
+#def math.ceil(x)
+#math.comb(n, k)
+#math.fabs(x) -> abs
+#math.floor(x)
+#math.sqrt(x)¶
+#math.asin(x)¶
+#math.atan(x)
+#math.atan2(y, x)¶
+#math.cos(x)
+#math.sin(x)
+#math.tan(x)
+
 
 def round(value):
     return math.round(value)

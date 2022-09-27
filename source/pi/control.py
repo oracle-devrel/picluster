@@ -14,7 +14,7 @@ import socket
 import re, uuid
 import datetime
 
-from gpiozero import CPUTemperature
+#from gpiozero import CPUTemperature
 
 from pydub import AudioSegment
 from pydub.playback import play
@@ -34,7 +34,7 @@ def getEnvironmentVariable(name):
         print("Error: environment variable {name} does not exist.".format(name = name))
         quit()
 
-def getEnvironmentVariable(name, default):
+def getEnvironmentVariableDefault(name, default):
     if name in os.environ:
         return os.getenv(name)
     else:
@@ -60,7 +60,7 @@ switch_ip = -1
 
 SERVER_IP = getEnvironmentVariable('SERVER_IP')
 AR_SERVER_URL = getEnvironmentVariable('AR_SERVER_URL')
-WARBLE_URL = getEnvironmentVariable('WARBLE_URL', None)
+WARBLE_URL = getEnvironmentVariableDefault('WARBLE_URL', None)
 hostName = "0.0.0.0"
 piServerPort = 8880
 MAX_MEMORY = 1024.0
@@ -73,6 +73,7 @@ sleep = SLEEP
 data = {}
 
 def background_thread(name):
+    global sleep
     time.sleep(sleep)
     print("start sending AR data")
 
@@ -147,8 +148,9 @@ def getInfo():
     disk_percent = str(disk.percent) + '%'
 
     # Temperature
-    temperature_info = CPUTemperature().temperature
-    temperature = "{:.4f}'C'".format(temperature_info)
+    #temperature_info = CPUTemperature().temperature
+    #temperature = "{:.4f}'C'".format(temperature_info)
+    temperature = ""
     #proc = subprocess.Popen(["python3", "gettemp.py"], stdout=subprocess.PIPE)
     #(output, err) = proc.communicate()
     #temperature = output.decode('utf-8').strip()
