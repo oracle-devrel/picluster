@@ -4,8 +4,10 @@ USERNAME=$1
 CODE=$2
 URL=$3
 TWEET=$4
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
 function check_environment {
+  export WARBLE_HOME=$DIR/../warble
   if [ -z "$JAVA_HOME" ] || [ -z "$GRAALVISOR_PATH" ]
   then
     echo "Please check your environment variables."
@@ -20,7 +22,7 @@ function start_graalvisor {
 }
 
 function register_function {
-  curl -s -X POST $GRAALVISOR_IP:$GRAALVISOR_PORT/register?name=warble\&entryPoint=main\&language=python -H 'Content-Type: application/json' --data-binary @main.py
+  curl -s -X POST $GRAALVISOR_IP:$GRAALVISOR_PORT/register?name=warble\&entryPoint=main\&language=python -H 'Content-Type: application/json' --data-binary @$WARBLE_HOME/graalvisor-entrypoint.py
 }
 
 pushd ../warble
@@ -28,16 +30,16 @@ pushd ../warble
 check_environment
 GRAALVISOR_IP=127.0.0.1
 GRAALVISOR_PORT=8080
-# Checking if the default port of GraalVisor is in use.
+# Checking if the default port of Graalvisor is in use.
 if [ -z "$(sudo lsof -i -P -n | grep LISTEN | grep $GRAALVISOR_PORT)" ]
 then
-  # GraalVisor is down, we have to launch it and register the function.
-  start_graalvisor &> "$GRAALVISOR_PATH".log &
+  # Graalvisor is down, we have to launch it and register the function.
+  start_graalvisor &> /tmp/graalvisor.log &
   sleep 1
   register_function
 fi
 
-# Prepare code for GraalVisor - escape double quotes correctly.
+# Prepare code for Graalvisor - escape double quotes correctly.
 CODE=$(echo "$CODE" | sed 's/"/\\\\"/g')
 CODE=$(echo "$CODE" | sed 's/"/\\"/g')
 

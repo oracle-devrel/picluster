@@ -1,4 +1,7 @@
 import sys
+import os
+
+sys.path.insert(0, os.environ['WARBLE_HOME'])
 import warblecc
 
 def warble(argv):
