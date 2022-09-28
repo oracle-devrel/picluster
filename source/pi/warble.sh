@@ -35,11 +35,11 @@ then
   GRAALVISOR_PORT=8080
 
   # Checking if the default port of Graalvisor is in use.
-  if [ -z "$(sudo lsof -i -P -n | grep LISTEN | grep $GRAALVISOR_PORT)" ]
+  if [ -z "$(lsof -i -P -n | grep LISTEN | grep $GRAALVISOR_PORT)" ]
   then
     # Graalvisor is down, we have to launch it and register the function.
     start_graalvisor &> /tmp/graalvisor.log &
-    sleep 1
+    sleep 5
     register_function
   fi
 
