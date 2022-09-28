@@ -20,11 +20,14 @@ from pydub import AudioSegment
 from pydub.playback import play
 import wget
 
-#source setpienv.sh
-#python3 control.py
+# source setpienv.sh
+# python3 control.py
 
 # pip install psutil
+# pip install requests
 
+server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
 
 def getEnvironmentVariable(name):
@@ -58,19 +61,18 @@ mac_address = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
 port_on_switch = -1
 switch_ip = -1
 
-SERVER_IP = getEnvironmentVariable('SERVER_IP')
-AR_SERVER_URL = getEnvironmentVariable('AR_SERVER_URL')
+SERVER_IP = getEnvironmentVariableDefault('SERVER_IP', None)
+AR_SERVER_URL = getEnvironmentVariableDefault('AR_SERVER_URL', None)
 WARBLE_URL = getEnvironmentVariableDefault('WARBLE_URL', None)
 hostName = "0.0.0.0"
 piServerPort = 8880
 MAX_MEMORY = 1024.0
+DATA = {}
 
 SLEEP = 5 # optimum time to sleep
 MAX_SLEEP = 50
 SLEEP_INC = 0.05
 sleep = SLEEP
-
-data = {}
 
 def background_thread(name):
     global sleep
@@ -94,36 +96,91 @@ def background_thread(name):
             if sleep <= MAX_SLEEP:
                 sleep = sleep + SLEEP_INC
 
-# Register Pi and get the port
-try:
-    data = {'ip': ip_address, 'mac': mac_address}
-    print(data)
-    headers = {'Content-type': 'application/json'}
-    url = 'http://{}/registerpi'.format(SERVER_IP).rstrip()
-    response = requests.post(url, data = json.dumps(data), headers = headers)
-    print(response)
+LISTENING_FOR_SERVER=True
 
-    data = {'ip': ip_address}
-    url = 'http://{}/getport'.format(SERVER_IP).rstrip()
-    response = requests.post(url, data = json.dumps(data), headers = headers)
-    print(response)
-    message = response.json()
-    if message["status"] == 'true':
-        port_on_switch = message["port"]
+class Listen(threading.Thread):
+    def __init__(self, port):
+        threading.Thread.__init__(self)
+        self.port = port
+        self.UIDCount = 0
 
-    url = 'http://{}/getpiswitch'.format(SERVER_IP).rstrip()
-    response = requests.post(url, data = json.dumps(data), headers = headers)
-    print(response)
-    message = response.json()
-    if message["status"] == 'true':
-        switch_ip = message["switch_ip"]
+    def run(self):
+        global LISTENING_FOR_SERVER
+        global SERVER_IP
+        client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+        client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        client.bind(("", self.port))
 
-except socket.error as e:
-    print("error")
-    print(e)
+        while True:
+            data, addr = client.recvfrom(1024)
+            ip = data
+            val = ip.decode('ascii')
+            print(val)
+            SERVER_IP = val
+
+            if LISTENING_FOR_SERVER == True:
+                LISTENING_FOR_SERVER = False
+                # Register Pi and get the port
+                try:
+                    data = {'ip': ip_address, 'mac': mac_address}
+                    print(data)
+                    headers = {'Content-type': 'application/json'}
+                    url = 'http://{}/registerpi'.format(SERVER_IP).rstrip()
+                    response = requests.post(url, data = json.dumps(data), headers = headers)
+                    print(response)
+
+                    data = {'ip': ip_address}
+                    url = 'http://{}/getport'.format(SERVER_IP).rstrip()
+                    response = requests.post(url, data = json.dumps(data), headers = headers)
+                    print(response)
+                    message = response.json()
+                    if message["status"] == 'true':
+                        port_on_switch = message["port"]
+
+                    url = 'http://{}/getpiswitch'.format(SERVER_IP).rstrip()
+                    response = requests.post(url, data = json.dumps(data), headers = headers)
+                    print(response)
+                    message = response.json()
+                    if message["status"] == 'true':
+                        switch_ip = message["switch_ip"]
+
+                except socket.error as e:
+                    print("error")
+                    print(e)
+
+publish_thread = Listen(3333)
+publish_thread.start()
+
+
+class Countdown:
+    def __init__(self):
+        self._running = True
+        self._count = 10
+
+    def terminate(self):
+        self._running = False
+
+    def reset(self):
+        self._count = 10
+
+    def run(self):
+        global LISTENING_FOR_SERVER
+        while True:
+            while self._running and self._count > 0:
+                print('T-minus', self._count)
+                self._count -= 1
+                time.sleep(5)
+            LISTENING_FOR_SERVER = True
+            time.sleep(30)
+
+COUNTDOWN = Countdown()
+t = threading.Thread(target = COUNTDOWN.run)
+t.start()
+
 
 
 def getInfo():
+    global DATA
     result = {}
     cpu = ""
     memory = ""
@@ -176,7 +233,7 @@ def getInfo():
        processes.append(item)
     result['processes'].append(processes)
 
-    result['data'] = data
+    result['data'] = DATA
 
     return result
 
@@ -202,6 +259,8 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/ping".upper():
             print("ping pong")
             response = 200
+            global COUNTDOWN
+            COUNTDOWN.reset()
             body = {'status': 'pong'}
 
         # List processes
@@ -384,14 +443,15 @@ class Handler(BaseHTTPRequestHandler):
         # curl -X POST -H "Content-Type: application/json" -d '{}' http://<ServerIP>/setdata
         elif self.path.upper() == "/setdata".upper():
             response = 200
-            data = message
+            global DATA
+            DATA = message
             body = {'success': 'true'}
 
         # Get Data
         # curl -X POST -H "Content-Type: application/json" -d '{}' http://<ServerIP>/getdata
         elif self.path.upper() == "/setdata".upper():
             response = 200
-            body = {'success': 'true', 'data': data}
+            body = {'success': 'true', 'data': DATA}
 
 
         self.send_response(response)

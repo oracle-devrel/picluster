@@ -93,7 +93,7 @@ class Parser:
             self.nextToken()
 
         if self.username is not None:
-            self.emitter.emitLine("setUsername({})".format(self.username))
+            self.emitter.emitLine("warbleapi.setUsername({})".format(self.username))
 
         self.emitter.emitLine("def main():")
         self.incIndent()

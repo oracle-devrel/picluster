@@ -34,6 +34,7 @@ def register_pi(ip_address, mac_address):
     with lock:
         pi_list[ip_address] = {'ip': ip_address, 'mac': mac_address, 'time': datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
 
+
 def remove_pi(ip_address):
     with lock:
         pi_list.update({ip_address:{}})
@@ -99,6 +100,7 @@ def warble_background_thread(name):
         except socket.error:
             print("error with server {}", WARBLE_SERVER)
 
+
 def isValidIp(address):
     digits = address.split(".")
 
@@ -159,6 +161,25 @@ class Handler(BaseHTTPRequestHandler):
 
                     except socket.error:
                         print("error")
+
+        # GetPi
+        # curl <ServerIP>:8880/getpi
+        elif self.path.upper() == "/getpi".upper():
+            print("getpi")
+            response = 200
+            body = {'status': 'true', 'items': pi_list}
+
+        # GetPort
+        elif self.path.upper() == "/getport".upper():
+            print("getport")
+            response = 200
+            body = {'status': 'true', 'items': port_list}
+
+        # GetSwitch
+        elif self.path.upper() == "/getswitch".upper():
+            print("getswitch")
+            response = 200
+            body = {'status': 'true', 'items': switches}
 
         # Free Pi
         # curl http://<ServerIP>/freepi
@@ -317,7 +338,7 @@ class Handler(BaseHTTPRequestHandler):
                     if pi:
                         body = {'status': 'true', 'pi': pi}
             else:
-                body = {'status': 'true', 'items': pi_list}
+                body = {'status': 'false'}
 
 
         # SetPort
@@ -339,7 +360,6 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/getport".upper():
             print("getport")
             response = 200
-            body = {'status': 'false'}
 
             if 'ip' in message:
                 ip = message["ip"]
@@ -347,7 +367,7 @@ class Handler(BaseHTTPRequestHandler):
                     port = port_list[ip]
                     body = {'status': 'true', 'port': port}
             else:
-                body = {'status': 'true', 'items': port_list}
+                body = {'status': 'false'}
 
 
         # AddSwitch
