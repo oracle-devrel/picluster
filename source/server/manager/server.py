@@ -338,6 +338,8 @@ class Handler(BaseHTTPRequestHandler):
                     pi = pi_list[ip]
                     if pi:
                         body = {'status': 'true', 'pi': pi}
+            else:
+                body = {'status': 'true', 'items': pi_list}
 
 
         # SetPort
@@ -366,6 +368,8 @@ class Handler(BaseHTTPRequestHandler):
                 if ip in port_list:
                     port = port_list[ip]
                     body = {'status': 'true', 'port': port}
+            else:
+                body = {'status': 'true', 'items': port_list}
 
 
         # AddSwitch
