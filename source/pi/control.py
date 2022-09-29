@@ -128,7 +128,11 @@ class Listen(threading.Thread):
                     url = 'http://{}/registerpi'.format(SERVER_IP).rstrip()
                     response = requests.post(url, data = json.dumps(data), headers = headers)
                     print(response)
+                except socket.error as e:
+                    print("error")
+                    print(e)
 
+                try:
                     data = {'ip': ip_address}
                     url = 'http://{}/getport'.format(SERVER_IP).rstrip()
                     response = requests.post(url, data = json.dumps(data), headers = headers)
@@ -136,7 +140,11 @@ class Listen(threading.Thread):
                     message = response.json()
                     if message["status"] == 'true':
                         port_on_switch = message["port"]
+                except socket.error as e:
+                    print("error")
+                    print(e)
 
+                try:
                     url = 'http://{}/getpiswitch'.format(SERVER_IP).rstrip()
                     response = requests.post(url, data = json.dumps(data), headers = headers)
                     print(response)
