@@ -330,6 +330,7 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/getpi".upper():
             print("getpi")
             response = 200
+            body = {'status': 'false'}
 
             if 'ip' in message:
                 ip = message['ip']
@@ -337,8 +338,6 @@ class Handler(BaseHTTPRequestHandler):
                     pi = pi_list[ip]
                     if pi:
                         body = {'status': 'true', 'pi': pi}
-            else:
-                body = {'status': 'false'}
 
 
         # SetPort
@@ -360,14 +359,13 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/getport".upper():
             print("getport")
             response = 200
+            body = {'status': 'false'}
 
             if 'ip' in message:
                 ip = message["ip"]
                 if ip in port_list:
                     port = port_list[ip]
                     body = {'status': 'true', 'port': port}
-            else:
-                body = {'status': 'false'}
 
 
         # AddSwitch
