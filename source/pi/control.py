@@ -319,10 +319,10 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 data = {'ip': ip_address, 'mac': mac_address}
                 headers = {'Content-type': 'application/json'}
-                response = requests.post('http://' + SERVER_IP + '/remove', data = json.dumps(data), headers = headers)
+                lresponse = requests.post('http://' + SERVER_IP + '/remove', data = json.dumps(data), headers = headers)
                 print(response)
 
-                if response.json()["status"] == True:
+                if lresponse.json()["status"] == True:
                     print("thumbs up")
 
             except socket.error:
