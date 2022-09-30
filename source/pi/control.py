@@ -96,6 +96,11 @@ def background_thread(name):
             if sleep <= MAX_SLEEP:
                 sleep = sleep + SLEEP_INC
 
+
+def shutdown_thread(name):
+    time.sleep(15)
+    os.system('sudo shutdown now')
+
 LISTENING_FOR_SERVER=True
 
 class Listen(threading.Thread):
@@ -323,7 +328,8 @@ class Handler(BaseHTTPRequestHandler):
             except socket.error:
                 print("error")
 
-            os.system('sudo shutdown now')
+            thread = threading.Thread(target=shutdown_thread, args=(1,))
+            thread.start()
 
         # Restart controller
         #TODO
