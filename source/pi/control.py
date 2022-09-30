@@ -16,8 +16,8 @@ import datetime
 
 #from gpiozero import CPUTemperature
 
-from pydub import AudioSegment
-from pydub.playback import play
+#from pydub import AudioSegment
+#from pydub.playback import play
 import wget
 
 # source setpienv.sh
