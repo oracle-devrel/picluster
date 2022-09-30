@@ -80,6 +80,6 @@ for ip in pi_list:
         current_list = getAllPi()
         pi = current_list[ip]
         if 'ip' not in pi:
-            print("register \"{}}\" ${} \"{}\" \"PORT\"".format(location, bank, ip))
+            print("register \"{}\" ${} \"{}\" \"PORT\"".format(location, bank, ip))
             input("Press Enter to continue...")
             break
