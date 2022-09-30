@@ -4,6 +4,9 @@ import socket
 import time
 
 
+# python3 broadcast.py
+
+
 def get_ip():
     st = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
