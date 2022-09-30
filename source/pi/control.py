@@ -217,7 +217,7 @@ def getInfo():
     #temperature_info = vcgencmd measure_temp
     temperature_info = subprocess.getoutput("vcgencmd measure_temp")
     temperature_info = temperature_info.replace("temp=", "")
-    temperature = "{:.4f}".format(temperature_info)
+    temperature = "{}".format(temperature_info)
     #proc = subprocess.Popen(["python3", "gettemp.py"], stdout=subprocess.PIPE)
     #(output, err) = proc.communicate()
     #temperature = output.decode('utf-8').strip()
