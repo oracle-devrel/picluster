@@ -39,7 +39,7 @@ class GetWarblesThread:
 
             print("read warbles")
             #os.system('bash getwarbles.sh')
-            os.system('../../../settwit.sh && bash getwarbles.sh')
+            os.system('source ../../../settwit.sh && bash getwarbles.sh')
 
 
 #WarblesThread = GetWarblesThread()
