@@ -13,6 +13,26 @@ import pandas as pd
 import tweepy
 import os
 import argparse
+import os.path
+import filecmp
+
+
+def getLastWrittenFile(path):
+    import glob
+    import os
+
+    list_of_files = glob.glob(path + '/*') # * means all if need specific format then *.csv
+    latest_file = max(list_of_files, key=os.path.getctime)
+    return latest_file
+
+def getNextNum(path):
+    #path = '.'
+    files = os.listdir(path)
+
+    csv_files = [i for i in files if i.endswith('.csv')]
+    old_files = [i for i in files if i.endswith('.old')]
+
+    return len(csv_files) + len(old_files)
 
 # function to display data of each tweet
 def printtweetdata(n, ith_tweet):
@@ -101,10 +121,24 @@ def scrape(words, date_since, numtweet):
                 # Function call to print tweet data on screen
                 printtweetdata(i, ith_tweet)
                 i = i+1
-        filename = 'scraped_tweets.csv'
+
+        path = './warble_data'
+
+        lastfile = getLastWrittenFile(path)
+
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        filename = path + '/scraped_tweets{}.csv'.format(getNextNum(path))
 
         # we will save our database as a CSV file.
         db.to_csv(filename)
+
+
+        # shallow comparison
+        if filecmp.cmp(lastfile, filename):
+            os.remove(filename)
+
 
 if __name__ == '__main__':
         parser = argparse.ArgumentParser(description='Twitter scraper')
