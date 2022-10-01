@@ -124,10 +124,10 @@ def scrape(words, date_since, numtweet):
 
         path = './warble_data'
 
-        lastfile = getLastWrittenFile(path)
-
         if not os.path.exists(path):
             os.makedirs(path)
+
+#        lastfile = getLastWrittenFile(path)
 
         filename = path + '/scraped_tweets{}.csv'.format(getNextNum(path))
 
@@ -136,8 +136,8 @@ def scrape(words, date_since, numtweet):
 
 
         # shallow comparison
-        if filecmp.cmp(lastfile, filename):
-            os.remove(filename)
+#        if filecmp.cmp(lastfile, filename):
+#            os.remove(filename)
 
 
 if __name__ == '__main__':
