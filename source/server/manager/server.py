@@ -415,6 +415,7 @@ class Handler(BaseHTTPRequestHandler):
         # curl -X POST -H "Content-Type: application/json" -d '{'location': 'front, back', 'switch_ip': switch_ip}' http://<ServerIP>/getpigroup
         # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\"}" http://192.168.1.51:8880/getpigroup
         elif self.path.upper() == "/setpigroup".upper():
+            print("setpigroup")
             response = 200
             switch_ip = message["switch_ip"]
             location = message['location']
@@ -432,6 +433,7 @@ class Handler(BaseHTTPRequestHandler):
         # curl -X POST -H "Content-Type: application/json" -d '{'location': 'all, front, back'}' http://<ServerIP>/getpigroup
         # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\"}" http://192.168.1.51:8880/getpigroup
         elif self.path.upper() == "/getpigroup".upper():
+            print("getpigroup")
             items = []
             response = 200
             location = message['location']
@@ -451,7 +453,7 @@ class Handler(BaseHTTPRequestHandler):
         # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address}' http://<ServerIP>/getpiswitch
         # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\"}" http://192.168.1.51:8880/getpiswitch
         elif self.path.upper() == "/getpiswitch".upper():
-            print("getport")
+            print("getpiswitch")
             response = 200
             ip = message["ip"]
             if ip in pi_switches:
