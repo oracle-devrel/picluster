@@ -156,7 +156,7 @@ class Listen(threading.Thread):
                     print(e)
 
                 try:
-                    data = {}
+                    data = {'ip': ip_address}
                     url = 'http://{}/getpiswitch'.format(SERVER_IP).rstrip()
                     response = requests.post(url, data = json.dumps(data), headers = headers)
                     print(response)

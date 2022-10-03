@@ -382,18 +382,18 @@ class Handler(BaseHTTPRequestHandler):
             ip = message['ip']
             pi = {'ip': ip, 'switch_ip': switch_ip}
 
-            if switch_ip not in switches:
-                switches[switch_ip] = []
-
-            found = False
-            for element in switches[switch_ip]:
-                print(element)
-                if ip == element['ip']:
-                    element = pi
-                    found = True
-
-            if not found:
-                switches[switch_ip].append(pi)
+            # if switch_ip not in switches:
+            #     switches[switch_ip] = []
+            #
+            # found = False
+            # for element in switches[switch_ip]:
+            #     print(element)
+            #     if ip == element['ip']:
+            #         element = pi
+            #         found = True
+            #
+            # if not found:
+            #     switches[switch_ip].append(pi)
 
             pi_switches[ip] = switch_ip
 
@@ -406,12 +406,20 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/getswitch".upper():
             print("getswitch")
             response = 200
-            if "switch_ip" in message:
-                switch_ip = message["switch_ip"]
-                items = switches[switch_ip]
-                body = {'status': 'true', 'items': items}
-            else
-                body = {'status': 'true', 'switches': switches}
+            if "ip" in message:
+                switch_ip = pi_switches[message['ip']]
+                body = {'status': 'true', 'switch_ip': switch_ip}
+            # if "switch_ip" in message:
+            #     switch_ip = message["switch_ip"]
+            #     items = switches[switch_ip]
+            #     body = {'status': 'true', 'items': items}
+            else:
+               body = {'status': 'false'}
+
+        elif self.path.upper() == "/yark".upper():
+            print("test")
+            response = 200
+            body = {'value': pi_switches}
 
 
         # SetPiGroup
