@@ -406,9 +406,12 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/getswitch".upper():
             print("getswitch")
             response = 200
-            switch_ip = message["switch_ip"]
-            items = switches[switch_ip]
-            body = {'status': 'true', 'items': items}
+            if "switch_ip" in message:
+                switch_ip = message["switch_ip"]
+                items = switches[switch_ip]
+                body = {'status': 'true', 'items': items}
+            else
+                body = {'status': 'true', 'switches': switches}
 
 
         # SetPiGroup
