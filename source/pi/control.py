@@ -118,6 +118,8 @@ class Listen(threading.Thread):
     def run(self):
         global LISTENING_FOR_SERVER
         global SERVER_IP
+        global port
+        global switch_ip
         client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
         client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         client.bind(("", self.port))
