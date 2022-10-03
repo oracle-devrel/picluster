@@ -96,10 +96,16 @@ def background_thread(name):
             if sleep <= MAX_SLEEP:
                 sleep = sleep + SLEEP_INC
 
+def is_root():
+    return os.geteuid() == 0
+
 
 def shutdown_thread(name):
     time.sleep(15)
-    os.system('sudo shutdown now')
+    if is_root():
+        os.system('shutdown now')
+    else:
+        os.system('sudo shutdown now')
 
 LISTENING_FOR_SERVER=True
 
