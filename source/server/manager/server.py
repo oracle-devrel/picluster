@@ -209,20 +209,21 @@ class Handler(BaseHTTPRequestHandler):
                     #print(ip)
                     index = random.randint(0, count - 1)
                     this_ip = list[index]
-                    #print(this_ip)
+                    print(this_ip)
 
                     try:
                         headers = {'Content-type': 'application/json'}
                         response = requests.get('http://' + this_ip + ':8880/getpiinfo', headers = headers)
                         message = response.json()
                         print(message)
+                        break
 
-                        if "status" in message:
-                            print("message has status")
-                            if message["status"] == 'true':
-                                print("status is true")
-                                body = {'status': 'true '}
-                                break
+                        # if "status" in message:
+                        #     print("message has status")
+                        #     if message["status"] == 'true':
+                        #         print("status is true")
+                        #         body = {'status': 'true '}
+                        #         break
                         #     if "CPU" in message:
                         #         cpu = message['CPU']
                         #         cpu = cpu[:-1]
