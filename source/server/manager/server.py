@@ -215,7 +215,7 @@ class Handler(BaseHTTPRequestHandler):
                             if "status" in message and message["status"] == 'true':
                                 if "CPU" in message:
                                     cpu = message['CPU']
-                                    cpu = cpu[:-1]]
+                                    cpu = cpu[:-1]
 
                                     if cpu < 30:
                                         body = {'status': 'true', "ip": ip}
