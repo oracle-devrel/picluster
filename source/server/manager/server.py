@@ -194,6 +194,33 @@ class Handler(BaseHTTPRequestHandler):
             response = 200
             body = {'status': 'false'}
 
+            count = len(pi_list)
+
+            for thepi in pi_list:
+                index = random.randint(0, count - 1)
+                pi = pi_list[index]
+                print(pi)
+
+                # if 'ip' in pi:
+                #     try:
+                #         ip = pi['ip']
+                #         headers = {'Content-type': 'application/json'}
+                #         response = requests.get('http://' + ip + ':8880/getpiinfo', headers = headers)
+                #         print(response)
+                #         message = response.json()
+                #
+                #         if "status" in message and message["status"] == 'true':
+                #             if "CPU" in message:
+                #                 cpu = message['CPU']
+                #                 cpu = cpu[:-1]
+                #
+                #                 if cpu < 30:
+                #                     body = {'status': 'true', "ip": ip_address}
+                #                     break
+                #
+                #     except socket.error:
+                #         print("error")
+
             # There is probably a better way to do this but this is how we are doing it for now:
             # 1. get all the registered Pi
             # 2. Pick 3 of them at random
