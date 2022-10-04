@@ -208,9 +208,8 @@ class Handler(BaseHTTPRequestHandler):
                 for ip in list:
                     #print(ip)
                     index = random.randint(0, count - 1)
-                    #print(index)
-                    print(list[index])
                     this_ip = list[index]
+                    print(this_ip)
 
                     try:
                         headers = {'Content-type': 'application/json'}
@@ -219,7 +218,7 @@ class Handler(BaseHTTPRequestHandler):
                         print(message)
 
                         if "status" in message and message["status"] == 'true':
-                            print("good")
+                            body = {'status': 'true'}
                             break
                         #     if "CPU" in message:
                         #         cpu = message['CPU']
