@@ -199,65 +199,65 @@ class Handler(BaseHTTPRequestHandler):
             # 2. Pick 3 of them at random
             # 3. Find the first one with less than 30% CPU Usage and return it
             # 4. If none are found, then search the entire list of registered Pi
-            found = False
-            keysList = []
-
-            with lock:
-                keysList = list(pi_list.keys())
-
-            keysList = random.choices(keysList, k=3)
-
-            for key in keysList:
-                pi = pi_list[key]
-                print(pi)
-
-                if 'ip' in pi:
-                    try:
-                        ip_address = pi['ip']
-                        headers = {'Content-type': 'application/json'}
-                        response = requests.get('http://' + ip_address + ':8880/getpiinfo', headers = headers)
-                        print(response)
-                        message = response.json()
-
-                        if "status" in message and message["status"] == 'true':
-                            if "CPU" in message:
-                                cpu = message['CPU']
-                                cpu = cpu[:-1]
-
-                                if cpu < 30:
-                                    body = {'status': 'true', "ip": ip_address}
-                                    break
-
-                    except socket.error:
-                        print("error")
-
-            if not found:
-                with lock:
-                    keysList = list(pi_list.keys())
-
-                for key in keysList:
-                    pi = pi_list[key]
-                    print(pi)
-
-                    if 'ip' in pi:
-                        try:
-                            ip_address = pi['ip']
-                            headers = {'Content-type': 'application/json'}
-                            response = requests.get('http://' + ip_address + ':8880/getpiinfo', headers = headers)
-                            print(response)
-                            message = response.json()
-
-                            if "status" in message and message["status"] == 'true':
-                                if "CPU" in message:
-                                    cpu = message['CPU']
-                                    cpu = cpu[:-1]
-
-                                    if cpu < 30:
-                                        body = {'status': 'true', "ip": ip_address}
-                                        break
-
-                        except socket.error:
-                            print("error")
+            #found = False
+            # keysList = []
+            #
+            # with lock:
+            #     keysList = list(pi_list.keys())
+            #
+            # keysList = random.choices(keysList, k=3)
+            #
+            # for key in keysList:
+            #     pi = pi_list[key]
+            #     print(pi)
+            #
+            #     if 'ip' in pi:
+            #         try:
+            #             ip_address = pi['ip']
+            #             headers = {'Content-type': 'application/json'}
+            #             response = requests.get('http://' + ip_address + ':8880/getpiinfo', headers = headers)
+            #             print(response)
+            #             message = response.json()
+            #
+            #             if "status" in message and message["status"] == 'true':
+            #                 if "CPU" in message:
+            #                     cpu = message['CPU']
+            #                     cpu = cpu[:-1]
+            #
+            #                     if cpu < 30:
+            #                         body = {'status': 'true', "ip": ip_address}
+            #                         break
+            #
+            #         except socket.error:
+            #             print("error")
+            #
+            # if not found:
+            #     with lock:
+            #         keysList = list(pi_list.keys())
+            #
+            #     for key in keysList:
+            #         pi = pi_list[key]
+            #         print(pi)
+            #
+            #         if 'ip' in pi:
+            #             try:
+            #                 ip_address = pi['ip']
+            #                 headers = {'Content-type': 'application/json'}
+            #                 response = requests.get('http://' + ip_address + ':8880/getpiinfo', headers = headers)
+            #                 print(response)
+            #                 message = response.json()
+            #
+            #                 if "status" in message and message["status"] == 'true':
+            #                     if "CPU" in message:
+            #                         cpu = message['CPU']
+            #                         cpu = cpu[:-1]
+            #
+            #                         if cpu < 30:
+            #                             body = {'status': 'true', "ip": ip_address}
+            #                             break
+            #
+            #             except socket.error:
+            #                 print("error")
 
 
         self.send_response(response)
