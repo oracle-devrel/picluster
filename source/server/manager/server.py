@@ -202,8 +202,7 @@ class Handler(BaseHTTPRequestHandler):
 
             for pi in pi_list:
                 #print(pi)
-                if 'ip' in pi:
-                    list.append(pi['ip'])
+                list.append(pi)
 
             try:
                 for ip in list:
