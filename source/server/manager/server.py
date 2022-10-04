@@ -216,10 +216,14 @@ class Handler(BaseHTTPRequestHandler):
                         message = requests.get('http://' + this_ip + ':8880/getpiinfo', headers = {'Content-type': 'application/json'}).json()
 
                         if "status" in message:
-                            print("message has status")
+                            #print("message has status")
                             if message["status"] == 'true':
-                                print("message has status")
+                                #print("message has status")
                                 body = {'status': 'true '}
+                                if "CPU" in message:
+                                    cpu = message['CPU']
+                                    cpu = cpu[:-1]
+                                    print(cpu)
                         break
                     #
                     #
