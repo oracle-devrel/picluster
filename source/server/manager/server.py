@@ -207,8 +207,9 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 for ip in list:
                     print(ip)
-                    # index = random.randint(0, count - 1)
-                    # print(index)
+                    index = random.randint(0, count - 1)
+                    print(index)
+                    print(list[index])
 
                     # if 'ip' in pi:
                     #     try:
