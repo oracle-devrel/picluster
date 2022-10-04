@@ -213,8 +213,7 @@ class Handler(BaseHTTPRequestHandler):
                     #break
 
                     try:
-                        headers = {'Content-type': 'application/json'}
-                        response = requests.get('http://' + this_ip + ':8880/getpiinfo', headers = headers)
+                        res = requests.get('http://' + this_ip + ':8880/getpiinfo', headers = {'Content-type': 'application/json'})
                         #message = response.json()
                         break
                     #     #print(message)
