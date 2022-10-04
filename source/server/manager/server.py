@@ -218,6 +218,8 @@ class Handler(BaseHTTPRequestHandler):
                         #print(message)
                         if "status" in message:
                             print("message has status")
+                            if message["status"] == 'true':
+                                print("message has status")
                         break
 
 

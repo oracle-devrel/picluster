@@ -9,7 +9,9 @@
 #include <Adafruit_NeoPixel.h>
 #include <ArduinoJson.h>
 
-int ledPin = 22;
+int resetSolenoidPin = 22;
+int powerSolenoidPin = 24;
+int ledPin = 40;
 
 byte mac[] = {0xA8, 0x61, 0x0A, 0xAE, 0x12, 0x61};
 
@@ -40,6 +42,11 @@ void setup() {
   server.begin();
   Serial.print("server is at ");
   Serial.println(Ethernet.localIP());
+
+  pinMode(resetSolenoidPin, OUTPUT);
+  pinMode(powerSolenoidPin, OUTPUT);
+  digitalWrite(resetSolenoidPin, LOW);
+  digitalWrite(powerSolenoidPin, LOW);
 
 //  pinMode(ledPin, OUTPUT);
 //  digitalWrite(ledPin, LOW);
@@ -142,6 +149,9 @@ void loop() {
       client.stop();
       return;
     }
+
+    // Parse GET
+    ParseGet(content);
     
     // Extract values
     // {"sensor":"yes", "time":"1234", "data": ["3.14", "6.92"]}
