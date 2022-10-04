@@ -181,6 +181,13 @@ class Handler(BaseHTTPRequestHandler):
             response = 200
             body = {'status': 'true', 'items': switches}
 
+        # picount
+        # curl <ServerIP>:8880/getpi
+        elif self.path.upper() == "/picount".upper():
+            print("picount")
+            response = 200
+            body = {'status': 'true', 'count': len(pi_list)}
+
         # Free Pi
         # curl http://<ServerIP>/freepi
         elif self.path.upper() == "/freepi".upper():
@@ -192,7 +199,7 @@ class Handler(BaseHTTPRequestHandler):
             # 2. Pick 3 of them at random
             # 3. Find the first one with less than 30% CPU Usage and return it
             # 4. If none are found, then search the entire list of registered Pi
-            found = false
+            found = False
             keysList = []
 
             with lock:
