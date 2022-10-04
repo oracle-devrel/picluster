@@ -200,7 +200,8 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 for pi in pi_list:
                     print(pi)
-                    #index = random.randint(0, count - 1)
+                    index = random.randint(0, count - 1)
+                    print(index)
                     #pi = pi_list[index]
                     #print(pi)
             except:
