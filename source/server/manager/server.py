@@ -197,11 +197,14 @@ class Handler(BaseHTTPRequestHandler):
             count = len(pi_list)
             print(count)
 
-            for thepi in pi_list:
-                print(thepi)
-                index = random.randint(0, count - 1)
-                pi = pi_list[index]
-                print(pi)
+            try:
+                for thepi in pi_list:
+                    print(thepi)
+                    index = random.randint(0, count - 1)
+                    pi = pi_list[index]
+                    print(pi)
+            except:
+                print("error freepi")
 
                 # if 'ip' in pi:
                 #     try:
