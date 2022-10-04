@@ -210,33 +210,35 @@ class Handler(BaseHTTPRequestHandler):
                     index = random.randint(0, count - 1)
                     this_ip = list[index]
                     print(this_ip)
+                    break
 
-                    try:
-                        headers = {'Content-type': 'application/json'}
-                        response = requests.get('http://' + this_ip + ':8880/getpiinfo', headers = headers)
-                        message = response.json()
-                        #print(message)
-                        if "status" in message:
-                            print("message has status")
-                            if message["status"] == 'true':
-                                print("message has status")
-                        break
-
-
-                        #     if message["status"] == 'true':
-                        #         print("status is true")
-                        #         body = {'status': 'true '}
-                        #         break
-                        #     if "CPU" in message:
-                        #         cpu = message['CPU']
-                        #         cpu = cpu[:-1]
-                        #
-                        #         if cpu < 30:
-                        #             body = {'status': 'true', "ip": ip}
-                        #             break
-
-                    except socket.error:
-                        print("error")
+                    # try:
+                    #     headers = {'Content-type': 'application/json'}
+                    #     response = requests.get('http://' + this_ip + ':8880/getpiinfo', headers = headers)
+                    #     message = response.json()
+                    #     #print(message)
+                    #     if "status" in message:
+                    #         print("message has status")
+                    #         if message["status"] == 'true':
+                    #             print("message has status")
+                    #             body = {'status': 'true '}
+                    #     break
+                    #
+                    #
+                    #     #     if message["status"] == 'true':
+                    #     #         print("status is true")
+                    #     #         body = {'status': 'true '}
+                    #     #         break
+                    #     #     if "CPU" in message:
+                    #     #         cpu = message['CPU']
+                    #     #         cpu = cpu[:-1]
+                    #     #
+                    #     #         if cpu < 30:
+                    #     #             body = {'status': 'true', "ip": ip}
+                    #     #             break
+                    #
+                    # except socket.error:
+                    #     print("error")
             except:
                 print("error freepi")
 

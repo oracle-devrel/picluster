@@ -198,3 +198,35 @@ void loop() {
     strip.show();   // Send the updated pixel colors to the hardware.
   }
 }
+
+void switchSolenoid(int pin) {
+    digitalWrite(pin, HIGH); // Switch Solenoid ON
+    delay(1000);             // Wait 1 Second
+    digitalWrite(pin, LOW);  // Switch Solenoid OFF
+    delay(1000);             // Wait 1 Second
+}
+
+void ParseGet(String content) {
+  digitalWrite(resetSolenoidPin, LOW);  // Switch Solenoid OFF
+  digitalWrite(powerSolenoidPin, LOW);  // Switch Solenoid OFF
+  Serial.println("ParseGet");
+  Serial.println(content);
+  int getIndex = content.indexOf("GET");
+
+  if (getIndex == 0) {
+    Serial.println("find GET");
+    // Literally the laziest way to check for the value of the arguments.
+    boolean resetState = content.indexOf("?reset=1&") > 0;
+    boolean powerState = content.indexOf("&power=1") > 0;
+
+    if (resetState) {
+      switchSolenoid(resetSolenoidPin);
+      Serial.println("reset");
+    }
+
+    if (powerState) {
+      switchSolenoid(powerSolenoidPin);
+      Serial.println("power");
+    }
+  }
+}
