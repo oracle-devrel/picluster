@@ -224,21 +224,10 @@ class Handler(BaseHTTPRequestHandler):
                                     cpu = message['CPU']
                                     cpu = cpu[:-1]
                                     print(cpu)
-                        break
-                    #
-                    #
-                    #     #     if message["status"] == 'true':
-                    #     #         print("status is true")
-                    #     #         body = {'status': 'true '}
-                    #     #         break
-                    #     #     if "CPU" in message:
-                    #     #         cpu = message['CPU']
-                    #     #         cpu = cpu[:-1]
-                    #     #
-                    #     #         if cpu < 30:
-                    #     #             body = {'status': 'true', "ip": ip}
-                    #     #             break
-                    #
+                                    if cpu < 30:
+                                        body = {'status': 'true', "ip": ip}
+                                        break
+
                     except socket.error:
                         print("error")
             except:
