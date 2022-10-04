@@ -210,12 +210,13 @@ class Handler(BaseHTTPRequestHandler):
                     index = random.randint(0, count - 1)
                     this_ip = list[index]
                     print(this_ip)
-                    break
+                    #break
 
-                    # try:
-                    #     headers = {'Content-type': 'application/json'}
-                    #     response = requests.get('http://' + this_ip + ':8880/getpiinfo', headers = headers)
-                    #     message = response.json()
+                    try:
+                        headers = {'Content-type': 'application/json'}
+                        response = requests.get('http://' + this_ip + ':8880/getpiinfo', headers = headers)
+                        #message = response.json()
+                        break
                     #     #print(message)
                     #     if "status" in message:
                     #         print("message has status")
@@ -237,8 +238,8 @@ class Handler(BaseHTTPRequestHandler):
                     #     #             body = {'status': 'true', "ip": ip}
                     #     #             break
                     #
-                    # except socket.error:
-                    #     print("error")
+                    except socket.error:
+                        print("error")
             except:
                 print("error freepi")
 
