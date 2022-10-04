@@ -196,7 +196,7 @@ class Handler(BaseHTTPRequestHandler):
             body = {'status': 'false'}
 
             count = len(pi_list)
-            print(count)
+            #print(count)
 
             list = []
 
@@ -209,7 +209,7 @@ class Handler(BaseHTTPRequestHandler):
                     #print(ip)
                     index = random.randint(0, count - 1)
                     this_ip = list[index]
-                    print(this_ip)
+                    #print(this_ip)
 
                     try:
                         headers = {'Content-type': 'application/json'}
@@ -217,9 +217,12 @@ class Handler(BaseHTTPRequestHandler):
                         message = response.json()
                         print(message)
 
-                        if "status" in message and message["status"] == 'true':
-                            body = {'status': 'true '}
-                            break
+                        if "status" in message:
+                            print("message has status")
+                            if message["status"] == 'true':
+                                print("status is true")
+                                body = {'status': 'true '}
+                                break
                         #     if "CPU" in message:
                         #         cpu = message['CPU']
                         #         cpu = cpu[:-1]
