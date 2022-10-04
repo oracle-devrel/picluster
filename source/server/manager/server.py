@@ -198,11 +198,11 @@ class Handler(BaseHTTPRequestHandler):
             print(count)
 
             try:
-                for thepi in pi_list:
-                    print(thepi)
-                    index = random.randint(0, count - 1)
-                    pi = pi_list[index]
+                for pi in pi_list:
                     print(pi)
+                    #index = random.randint(0, count - 1)
+                    #pi = pi_list[index]
+                    #print(pi)
             except:
                 print("error freepi")
 
