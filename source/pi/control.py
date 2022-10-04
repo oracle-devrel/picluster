@@ -237,7 +237,6 @@ def getInfo():
     #temperature = output.decode('utf-8').strip()
 
     # Output Info
-    result['time'] = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
     result["CPU"] = cpu
     result["MemoryFree"] = memory_available
     result["MemoryTotal"] = memory_total
