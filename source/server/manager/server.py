@@ -218,7 +218,9 @@ class Handler(BaseHTTPRequestHandler):
                         message = response.json()
                         print(message)
 
-                        # if "status" in message and message["status"] == 'true':
+                        if "status" in message and message["status"] == 'true':
+                            print("good")
+                            break
                         #     if "CPU" in message:
                         #         cpu = message['CPU']
                         #         cpu = cpu[:-1]
