@@ -153,11 +153,9 @@ class Handler(BaseHTTPRequestHandler):
                 if 'ip' in pi:
                     try:
                         ip_address = pi['ip']
-                        headers = {'Content-type': 'application/json'}
-                        response = requests.get('http://' + ip_address + ':8880/shutdown', headers = headers)
-                        print(response)
+                        message = requests.get('http://' + ip_address + ':8880/shutdown', headers = {'Content-type': 'application/json'}).json()
 
-                        if response.json()["status"] == 'true':
+                        if message["status"] == 'true':
                             print("shutting down {}".format(ip_address))
 
                     except socket.error:
@@ -196,36 +194,28 @@ class Handler(BaseHTTPRequestHandler):
             body = {'status': 'false'}
 
             count = len(pi_list)
-            #print(count)
-
             list = []
 
             for pi in pi_list:
-                #print(pi)
                 list.append(pi)
 
             try:
                 for ip in list:
-                    #print(ip)
                     index = random.randint(0, count - 1)
                     this_ip = list[index]
                     print(this_ip)
-                    #break
 
                     try:
                         message = requests.get('http://' + this_ip + ':8880/getpiinfo', headers = {'Content-type': 'application/json'}).json()
 
                         if "status" in message:
-                            #print("message has status")
                             if message["status"] == 'true':
-                                #print("message has status")
-                                body = {'status': 'true '}
                                 if "CPU" in message:
                                     cpu = message['CPU']
                                     cpu = cpu[:-1]
                                     print(cpu)
                                     if cpu < 30:
-                                        body = {'status': 'true', "ip": ip}
+                                        body = {'status': 'true', "ip": this_ip}
                                         break
 
                     except socket.error:
@@ -273,10 +263,7 @@ class Handler(BaseHTTPRequestHandler):
                     try:
                         ip_address = pi['ip']
                         data = {'command': command}
-                        headers = {'Content-type': 'application/json'}
-                        response = requests.post('http://' + ip_address + ':8880/runnow', data = json.dumps(data), headers = headers)
-                        print(response)
-                        message = response.json()
+                        message = requests.post('http://' + ip_address + ':8880/runnow', data = json.dumps(data), headers = {'Content-type': 'application/json'}).json()
 
                         if message["status"] == 'true':
                             print("success")
