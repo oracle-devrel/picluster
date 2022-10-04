@@ -198,17 +198,24 @@ class Handler(BaseHTTPRequestHandler):
             count = len(pi_list)
             print(count)
 
-            try:
-                for pi in pi_list:
-                    print(pi)
-                    index = random.randint(0, count - 1)
-                    print(index)
+            list = []
 
-                    if 'ip' in pi:
-                        try:
-                            ip = pi_list['ip']
-                            print(ip)
-                            break
+            for pi in pi_list:
+                print(pi)
+                if 'ip' in pi:
+                    list.append(pi['ip'])
+
+            try:
+                for ip in list:
+                    print(ip)
+                    # index = random.randint(0, count - 1)
+                    # print(index)
+
+                    # if 'ip' in pi:
+                    #     try:
+                    #         ip = pi_list['ip']
+                    #         print(ip)
+                    #         break
                             # headers = {'Content-type': 'application/json'}
                             # response = requests.get('http://' + ip + ':8880/getpiinfo', headers = headers)
                             # print(response)
@@ -223,8 +230,8 @@ class Handler(BaseHTTPRequestHandler):
                             #             body = {'status': 'true', "ip": ip}
                             #             break
 
-                        except socket.error:
-                            print("error")
+                        # except socket.error:
+                        #     print("error")
             except:
                 print("error freepi")
 
