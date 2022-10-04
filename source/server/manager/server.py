@@ -214,9 +214,9 @@ class Handler(BaseHTTPRequestHandler):
                                     cpu = message['CPU']
                                     cpu = cpu[:-1]
                                     print(cpu)
-                                    if cpu < 30:
-                                        body = {'status': 'true', "ip": this_ip}
-                                        break
+                                    # if cpu < 30:
+                                    #     body = {'status': 'true', "ip": this_ip}
+                                    break
 
                     except socket.error:
                         print("error")
