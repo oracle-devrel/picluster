@@ -154,7 +154,7 @@ void loop() {
     int r = doc["data"][0].as<long>();
     int g = doc["data"][1].as<long>();
     int b = doc["data"][2].as<long>();
-    int w = doc["data"][3].as<long>();
+    //int w = doc["data"][3].as<long>();
 
     // for (int i = 0; i < 3; i++) {
     //   Serial.println(doc["data"][i].as<char*>());
@@ -184,7 +184,7 @@ void loop() {
 
     //   delay(DELAYVAL); // Pause before next pass through loop
     // }
-    strip.setPixelColor(index, r, g, b, w);
+    strip.setPixelColor(index, r, g, b);
     strip.show();   // Send the updated pixel colors to the hardware.
   }
 }

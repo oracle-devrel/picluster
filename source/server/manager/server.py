@@ -215,7 +215,7 @@ class Handler(BaseHTTPRequestHandler):
                         headers = {'Content-type': 'application/json'}
                         response = requests.get('http://' + this_ip + ':8880/getpiinfo', headers = headers)
                         message = response.json()
-                        print(message)
+                        #print(message)
                         break
 
                         # if "status" in message:
