@@ -11,7 +11,8 @@ import subprocess
 import psutil
 from os.path import exists
 import socket
-import re, uuid
+import re
+import uuid
 import datetime
 
 #from gpiozero import CPUTemperature
@@ -34,14 +35,17 @@ def getEnvironmentVariable(name):
     if name in os.environ:
         return os.getenv(name)
     else:
-        print("Error: environment variable {name} does not exist.".format(name = name))
+        print(
+            "Error: environment variable {name} does not exist.".format(name=name))
         quit()
+
 
 def getEnvironmentVariableDefault(name, default):
     if name in os.environ:
         return os.getenv(name)
     else:
-        print("Error: environment variable {name} does not exist.".format(name = name))
+        print(
+            "Error: environment variable {name} does not exist.".format(name=name))
         return default
 
 
@@ -56,6 +60,7 @@ def get_ip():
         st.close()
     return IP
 
+
 ip_address = get_ip()
 mac_address = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
 port_on_switch = -1
@@ -69,10 +74,11 @@ piServerPort = 8880
 MAX_MEMORY = 1024.0
 DATA = {}
 
-SLEEP = 5 # optimum time to sleep
+SLEEP = 5  # optimum time to sleep
 MAX_SLEEP = 50
 SLEEP_INC = 0.05
 sleep = SLEEP
+
 
 def background_thread(name):
     global sleep
@@ -84,7 +90,8 @@ def background_thread(name):
         try:
             data = getInfo()
             headers = {'Content-type': 'application/json'}
-            response = requests.post(AR_SERVER_URL, data = json.dumps(data), headers = headers)
+            response = requests.post(
+                AR_SERVER_URL, data=json.dumps(data), headers=headers)
             print("sent pi data".format(response))
 
             if response == "<Response [200]>":
@@ -95,6 +102,7 @@ def background_thread(name):
             print("error")
             if sleep <= MAX_SLEEP:
                 sleep = sleep + SLEEP_INC
+
 
 def is_root():
     return os.geteuid() == 0
@@ -107,7 +115,9 @@ def shutdown_thread(name):
     else:
         os.system('sudo shutdown now')
 
-LISTENING_FOR_SERVER=True
+
+LISTENING_FOR_SERVER = True
+
 
 class Listen(threading.Thread):
     def __init__(self, port):
@@ -120,7 +130,7 @@ class Listen(threading.Thread):
         global SERVER_IP
         global port_on_switch
         global switch_ip
-        client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+        client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
         client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         client.bind(("", self.port))
 
@@ -139,7 +149,8 @@ class Listen(threading.Thread):
                     print(data)
                     headers = {'Content-type': 'application/json'}
                     url = 'http://{}/registerpi'.format(SERVER_IP).rstrip()
-                    response = requests.post(url, data = json.dumps(data), headers = headers)
+                    response = requests.post(
+                        url, data=json.dumps(data), headers=headers)
                     print(response)
                 except socket.error as e:
                     print("error")
@@ -148,7 +159,8 @@ class Listen(threading.Thread):
                 try:
                     data = {'ip': ip_address}
                     url = 'http://{}/getport'.format(SERVER_IP).rstrip()
-                    response = requests.post(url, data = json.dumps(data), headers = headers)
+                    response = requests.post(
+                        url, data=json.dumps(data), headers=headers)
                     print(response)
                     message = response.json()
                     if message["status"] == 'true':
@@ -160,7 +172,8 @@ class Listen(threading.Thread):
                 try:
                     data = {'ip': ip_address}
                     url = 'http://{}/getpiswitch'.format(SERVER_IP).rstrip()
-                    response = requests.post(url, data = json.dumps(data), headers = headers)
+                    response = requests.post(
+                        url, data=json.dumps(data), headers=headers)
                     print(response)
                     message = response.json()
                     if message["status"] == 'true':
@@ -169,6 +182,7 @@ class Listen(threading.Thread):
                 except socket.error as e:
                     print("error")
                     print(e)
+
 
 publish_thread = Listen(3333)
 publish_thread.start()
@@ -195,10 +209,37 @@ class Countdown:
             LISTENING_FOR_SERVER = True
             time.sleep(30)
 
+
 COUNTDOWN = Countdown()
-t = threading.Thread(target = COUNTDOWN.run)
+t = threading.Thread(target=COUNTDOWN.run)
 t.start()
 
+
+def list_processes():
+    procs = list()
+
+    for p in psutil.process_iter(attrs=None, ad_value=None):
+        try:
+            p_info = p.as_dict(attrs=['pid'])
+            process = psutil.Process(pid=p_info['pid'])
+            process.cpu_percent(interval=None)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+
+    for p in psutil.process_iter(attrs=None, ad_value=None):
+        try:
+            p_info = p.as_dict(
+                attrs=['pid', 'name', 'username', 'memory_percent'])
+            current_process = psutil.Process(pid=p_info['pid'])
+            p_info["cpu_percent"] = current_process.cpu_percent(interval=0.01)
+            if (p_info['cpu_percent']):
+                procs.append(p_info)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+
+    processes = sorted(procs, key=lambda p: p['cpu_percent'], reverse=True)
+
+    return processes
 
 
 def getInfo():
@@ -228,7 +269,7 @@ def getInfo():
 
     # Temperature
     #temperature_info = CPUTemperature().temperature
-    #temperature_info = vcgencmd measure_temp
+    # temperature_info = vcgencmd measure_temp
     temperature_info = subprocess.getoutput("vcgencmd measure_temp")
     temperature_info = temperature_info.replace("temp=", "")
     temperature = "{}".format(temperature_info)
@@ -247,14 +288,11 @@ def getInfo():
     result["CPUTemperature"] = temperature
     result["ip"] = ip_address
     result["mac"] = mac_address
-    result['port'] = port_on_switch #TODO create a unique port 1-48
-    result['switch_ip'] = switch_ip #TODO get switch IP address
+    result['port'] = port_on_switch  # TODO create a unique port 1-48
+    result['switch_ip'] = switch_ip  # TODO get switch IP address
 
     result['processes'] = []
-    processes = list()
-    for process in psutil.process_iter():
-       item = process.as_dict(attrs=['name', 'pid', 'cpu_percent'])
-       processes.append(item)
+    processes = list_processes()[:5]
     result['processes'].append(processes)
 
     result['data'] = DATA
@@ -294,14 +332,14 @@ class Handler(BaseHTTPRequestHandler):
             processes = []
 
             for proc in psutil.process_iter():
-               try:
-                   # Get process name & pid from process object.
-                   processName = proc.name()
-                   processID = proc.pid
-                   item = {'name': processName, 'id': processID}
-                   processes.append(item)
-               except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                   pass
+                try:
+                    # Get process name & pid from process object.
+                    processName = proc.name()
+                    processID = proc.pid
+                    item = {'name': processName, 'id': processID}
+                    processes.append(item)
+                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                    pass
 
             body = {'status': 'true', 'processes': processes}
 
@@ -328,7 +366,8 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 data = {'ip': ip_address, 'mac': mac_address}
                 headers = {'Content-type': 'application/json'}
-                lresponse = requests.post('http://' + SERVER_IP + '/remove', data = json.dumps(data), headers = headers)
+                lresponse = requests.post(
+                    'http://' + SERVER_IP + '/remove', data=json.dumps(data), headers=headers)
                 print(response)
 
                 if lresponse.json()["status"] == True:
@@ -341,7 +380,7 @@ class Handler(BaseHTTPRequestHandler):
             thread.start()
 
         # Restart controller
-        #TODO
+        # TODO
 
         self.send_response(response)
         self.send_header("Content-type", "application/json")
@@ -378,10 +417,11 @@ class Handler(BaseHTTPRequestHandler):
         if self.path.upper() == "/rungetpid".upper():
             response = 200
             body = {'status': 'true'}
-            command = message['command'].split() # NOTE: This will have a problem with certain arguments that contain spaces.
+            # NOTE: This will have a problem with certain arguments that contain spaces.
+            command = message['command'].split()
             process = subprocess.Popen(command)
             body = {'pid': process.pid}
-            #TODO read stdout to be read later
+            # TODO read stdout to be read later
             print(process.pid)
 
         # Terminate process
@@ -391,7 +431,7 @@ class Handler(BaseHTTPRequestHandler):
             response = 200
             body = {'success': 'true'}
             process = psutil.Process(pid)
-            process.terminate()  #TODO or p.kill()?
+            process.terminate()  # TODO or p.kill()?
 
         # Get info about process
         # curl -X POST -H "Content-Type: application/json" -d '{"pid":"1234"}' http://<ServerIP>/getpidinfo
@@ -408,7 +448,7 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/restart".upper():
             command = message['command']
             response = 200
-            #TODO put command somwhere to run once
+            # TODO put command somwhere to run once
             os.system('sudo shutdown -r now')
             body = {'success': 'true'}
 
@@ -417,7 +457,7 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/getpidoutput".upper():
             pid = message['pid']
             response = 200
-            #TODO put command somwhere to run once
+            # TODO put command somwhere to run once
             body = {'success': 'true'}
 
         # Play sound
@@ -440,7 +480,7 @@ class Handler(BaseHTTPRequestHandler):
             pattern = message['pattern']
             response = 200
             body = {'success': 'true'}
-            #TODO
+            # TODO
 
         # Code
         # curl -X POST -H "Content-Type: application/json" -d '{"code":"{...}"}' http://<ServerIP>/code
@@ -454,13 +494,15 @@ class Handler(BaseHTTPRequestHandler):
                 response = 200
                 body = {'success': 'true'}
                 #os.system('python3 warblecc.py \"' + code + '"')
-                os.system('bash warble.sh {} \"{}\" {} {}'.format(username, code, WARBLE_URL, tweet))
+                os.system('bash warble.sh {} \"{}\" {} {}'.format(
+                    username, code, WARBLE_URL, tweet))
             else:
                 response = 200
                 #os.system('python3 warblecc.py \"' + code + '"')
-                #os.system('bash warble.sh {} \"{}\" {}'.format(username, code)
-                #TODO call warble.sh without url and get the return value here.
-                stream = os.popen('bash warble.sh {} \"{}\" {}'.format(username, code, ""))
+                # os.system('bash warble.sh {} \"{}\" {}'.format(username, code)
+                # TODO call warble.sh without url and get the return value here.
+                stream = os.popen(
+                    'bash warble.sh {} \"{}\" {}'.format(username, code, ""))
                 output = stream.read()
                 body = {'success': 'true', 'output': output}
 
@@ -478,27 +520,28 @@ class Handler(BaseHTTPRequestHandler):
             response = 200
             body = {'success': 'true', 'data': DATA}
 
-
         self.send_response(response)
         self.send_header("Content-type", "application/json")
         self.end_headers()
         self.wfile.write(bytes(json.dumps(body), "utf8"))
         return
 
+
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
-  """Handle requests in a separate thread."""
+    """Handle requests in a separate thread."""
+
 
 if __name__ == "__main__":
-  webServer = ThreadedHTTPServer((hostName, piServerPort), Handler)
-  print("Server started http://%s:%s" % (hostName, piServerPort))
+    webServer = ThreadedHTTPServer((hostName, piServerPort), Handler)
+    print("Server started http://%s:%s" % (hostName, piServerPort))
 
-  thread = threading.Thread(target=background_thread, args=(1,))
-  thread.start()
+    thread = threading.Thread(target=background_thread, args=(1,))
+    thread.start()
 
-  try:
-      webServer.serve_forever()
-  except KeyboardInterrupt:
-      pass
+    try:
+        webServer.serve_forever()
+    except KeyboardInterrupt:
+        pass
 
-  webServer.server_close()
-  print("Server stopped.")
+    webServer.server_close()
+    print("Server stopped.")
