@@ -292,6 +292,17 @@ class Parser:
                 self.parseArguments(functionTypes);
                 self.emitter.emit(")")
 
+        # SLEEP ( expression, expression, expression, expression )
+        elif self.checkToken(TokenType.SLEEP):
+            self.nextToken()
+
+            if self.checkToken(TokenType.BEGIN):
+                self.nextToken()
+                self.emitter.emit(self.getIndent() + "warbleapi.sleep(")
+                functionTypes = [self.parseExpression, self.parseExpression, self.parseExpression, self.parseExpression]
+                self.parseArguments(functionTypes);
+                self.emitter.emit(")")
+
         # LIGHTS ( expression, expression, expression, expression )
         elif self.checkToken(TokenType.LIGHTS):
             self.nextToken()

@@ -51,7 +51,7 @@ def collect():
     for key in keysList:
         pi = pi_list[key]
         success = False
-        print(pi)
+        #print(pi)
 
         if 'ip' in pi:
             try:

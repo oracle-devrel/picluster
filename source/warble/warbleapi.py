@@ -2,6 +2,7 @@ import io
 import os
 import socket
 import requests
+import time
 #import wget
 # from pydub import AudioSegment
 # from pydub.playback import play
@@ -90,39 +91,33 @@ def drawline(x1, y1, x2, y2, r, g, b):
     print("do something: {}, {}, {}".format(r, g, b))
 
 
-def lights(t, r, g, b):
-    print("do something: {}, {}, {}, {}".format(t, r, g, b))
+def lights(i, r, g, b):
+    try:
+        data = {'index': i, 'data': [r, g, b]}
+        headers = {'Content-type': 'application/json'}
+        response = requests.post('http://' + LIGHT_IP, data = json.dumps(data), headers = headers)
+        message = response.json()
+        if message["status"] == 'true':
+            print('success')
+    except socket.error:
+        print("error")
+
+
+def sleep(t):
+    time.sleep(t)
 
 
 def play_sound(url):
-#     # if is_macos():
-#     #     media = MediaPlayer(url)
-#     #     media.play()
-#     # elif is_raspberrypi():
-#     #     pygame.mixer.init()
-#     #     sound = pygame.mixer.Sound('/home/pi/ding.wav')
-#     #     playing = sound.play()
-#     if is_macos():
-#       media = MediaPlayer(url)
-#       media.play()
-#     elif is_raspberrypi():
-# #      pygame.mixer.init()
-# #      stream = StreamFile(url)
-# #      #sound = pygame.mixer.Sound('/home/pi/ding.wav')
-# #      #playing = sound.play()
-# #      pygame.mixer.load(stream)
-# #      pygame.mixer.music.play()
-# #      while pygame.mixer.music.get_busy():
-# #        sleep(1)
-# #       filename = 'sound.mp3'
-# #       filename = urllib.request.urlopen(url)
-#        filename = wget.download(url)
-#        sound = AudioSegment.from_file_using_temporary_files(filename)
-#        play(sound)
-#        if os.path.exists(filename):
-#          print("exists")
-#          os.remove(filename)
-    os.system('python3 playsound.py --url {}'.format(url))
+    try:
+        data = {'url': url}
+        headers = {'Content-type': 'application/json'}
+        response = requests.post('http://' + SOUND_IP, data = json.dumps(data), headers = headers)
+        message = response.json()
+        if message["status"] == 'true':
+            print('success')
+    except socket.error:
+        print("error")
+    #os.system('python3 playsound.py --url {}'.format(url))
 
 
 from decimal import getcontext
