@@ -118,6 +118,40 @@ def isValidIp(address):
 
     return True
 
+def getFreePi():
+    result = False
+    result_ip = None
+    count = len(pi_list)
+    list = []
+
+    for pi in pi_list:
+        list.append(pi)
+
+    try:
+        for ip in list:
+            index = random.randint(0, count - 1)
+            this_ip = list[index]
+            print(this_ip)
+
+            try:
+                message = requests.get('http://' + this_ip + ':8880/getpiinfo', headers = {'Content-type': 'application/json'}).json()
+
+                if "status" in message:
+                    if message["status"] == 'true':
+                        if "CPU" in message:
+                            cpu = message['CPU']
+                            cpu = cpu[:-1]
+                            if math.ceil(float(cpu)) < 30:
+                                #body = {'status': 'true', "ip": this_ip}
+                                result_ip = this_ip
+                            break
+
+            except socket.error:
+                print("error")
+    except:
+        print("error freepi")
+
+    return result, result_ip
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -192,36 +226,12 @@ class Handler(BaseHTTPRequestHandler):
         # curl http://<ServerIP>/freepi
         elif self.path.upper() == "/freepi".upper():
             response = 200
-            body = {'status': 'false'}
+            result, ip = getFreePi()
 
-            count = len(pi_list)
-            list = []
-
-            for pi in pi_list:
-                list.append(pi)
-
-            try:
-                for ip in list:
-                    index = random.randint(0, count - 1)
-                    this_ip = list[index]
-                    print(this_ip)
-
-                    try:
-                        message = requests.get('http://' + this_ip + ':8880/getpiinfo', headers = {'Content-type': 'application/json'}).json()
-
-                        if "status" in message:
-                            if message["status"] == 'true':
-                                if "CPU" in message:
-                                    cpu = message['CPU']
-                                    cpu = cpu[:-1]
-                                    if math.ceil(float(cpu)) < 30:
-                                        body = {'status': 'true', "ip": this_ip}
-                                    break
-
-                    except socket.error:
-                        print("error")
-            except:
-                print("error freepi")
+            if result:
+                body = {'status': 'true', "ip": ip}
+            else:
+                body = {'status': 'false'}
 
 
         self.send_response(response)
