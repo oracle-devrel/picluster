@@ -17,8 +17,8 @@ byte mac[] = {0xA8, 0x61, 0x0A, 0xAE, 0x12, 0x61};
 
 EthernetServer server(80);
 
-IPAddress ip();
-//IPAddress ip(170, 20, 1, 20);
+//IPAddress ip();
+IPAddress ip(170, 20, 0, 20);
 
 #define LED_COUNT  8
 Adafruit_NeoPixel strip(LED_COUNT, ledPin, NEO_GRBW + NEO_KHZ800);
