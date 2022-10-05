@@ -144,6 +144,7 @@ def getFreePi():
                             if math.ceil(float(cpu)) < 30:
                                 #body = {'status': 'true', "ip": this_ip}
                                 result_ip = this_ip
+                                result = True
                             break
 
             except socket.error:
