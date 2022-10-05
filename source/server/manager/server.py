@@ -216,8 +216,8 @@ class Handler(BaseHTTPRequestHandler):
                                     cpu = cpu[:-1]
                                     print(cpu)
                                     print(type(cpu))
-                                    print(math.ceil(cpu))
-                                    if math.ceil(cpu) < 30:
+                                    print(math.ceil(int(cpu)))
+                                    if math.ceil(int(cpu)) < 30:
                                         body = {'status': 'true', "ip": this_ip}
                                     break
 
