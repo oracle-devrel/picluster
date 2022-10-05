@@ -25,7 +25,7 @@ def getEnvironmentVariable(name):
         quit()
 
 SERVER_IP = getEnvironmentVariable('SERVER_IP')
-SLEEP = 4
+SLEEP = 0#4
 
 def getAllPi():
     try:
@@ -43,6 +43,23 @@ def getAllPi():
         print("error")
 
     return []
+
+
+def pingPi(ip):
+    try:
+        data = {}
+        headers = {'Content-type': 'application/json'}
+        response = requests.get('http://' + ip + ':8880/ping', headers = headers)
+        message = response.json()
+
+        if message["status"] == 'pong':
+            return True
+
+    except socket.error:
+        print("error")
+
+    return False
+
 
 def sendShutdown(ip):
     try:
@@ -64,22 +81,40 @@ location = args.location
 
 pi_list = getAllPi()
 
+
+print("we have {} pi".format(len(pi_list)))
+
 # Check that all pi are good
 for ip in pi_list:
     pi = pi_list[ip]
     if 'ip' not in pi:
         print("This pi is bad {}".format(ip))
-        quit()
+#        quit()
+i = 1
+for ip in pi_list:
+    pi = pi_list[ip]
+    if 'ip' in pi:
+      ip = pi['ip']
+#      print(ip)
+      if pingPi(ip):
+#        print("shutting down {}".format(ip))
+#        sendShutdown(ip)
+        print("register(\"{}\", {}, \"{}\", {})".format(location, bank, ip, i))
+#        input("Press Enter to continue...")
+        i += 2
+        if i == 41:
+          i = 2
+
 
 # For each good pi send a shutdown one at a time
-for ip in pi_list:
-    sendShutdown(ip)
-    time.sleep(SLEEP)
-    while True:
-        time.sleep(SLEEP)
-        current_list = getAllPi()
-        pi = current_list[ip]
-        if 'ip' not in pi:
-            print("register \"{}\" ${} \"{}\" \"PORT\"".format(location, bank, ip))
-            input("Press Enter to continue...")
-            break
+#for ip in pi_list:
+#    sendShutdown(ip)
+#    time.sleep(SLEEP)
+#    while True:
+#        time.sleep(SLEEP)
+#        current_list = getAllPi()
+#        pi = current_list[ip]
+#        if 'ip' not in pi:
+#            print("register \"{}\" ${} \"{}\" \"PORT\"".format(location, bank, ip))
+#            input("Press Enter to continue...")
+#            break

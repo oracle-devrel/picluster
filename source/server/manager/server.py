@@ -12,7 +12,9 @@ import os
 import socket
 from datetime import datetime
 from threading import RLock
-
+import random
+from decimal import Decimal, ROUND_HALF_EVEN
+import math
 
 # pip install requests
 
@@ -116,6 +118,41 @@ def isValidIp(address):
 
     return True
 
+def getFreePi():
+    result = False
+    result_ip = None
+    count = len(pi_list)
+    list = []
+
+    for pi in pi_list:
+        list.append(pi)
+
+    try:
+        for ip in list:
+            index = random.randint(0, count - 1)
+            this_ip = list[index]
+            print(this_ip)
+
+            try:
+                message = requests.get('http://' + this_ip + ':8880/getpiinfo', headers = {'Content-type': 'application/json'}).json()
+
+                if "status" in message:
+                    if message["status"] == 'true':
+                        if "CPU" in message:
+                            cpu = message['CPU']
+                            cpu = cpu[:-1]
+                            if math.ceil(float(cpu)) < 30:
+                                #body = {'status': 'true', "ip": this_ip}
+                                result_ip = this_ip
+                                result = True
+                            break
+
+            except socket.error:
+                print("error")
+    except:
+        print("error freepi")
+
+    return result, result_ip
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -152,11 +189,9 @@ class Handler(BaseHTTPRequestHandler):
                 if 'ip' in pi:
                     try:
                         ip_address = pi['ip']
-                        headers = {'Content-type': 'application/json'}
-                        response = requests.get('http://' + ip_address + ':8880/shutdown', headers = headers)
-                        print(response)
+                        message = requests.get('http://' + ip_address + ':8880/shutdown', headers = {'Content-type': 'application/json'}).json()
 
-                        if response.json()["status"] == 'true':
+                        if message["status"] == 'true':
                             print("shutting down {}".format(ip_address))
 
                     except socket.error:
@@ -181,76 +216,23 @@ class Handler(BaseHTTPRequestHandler):
             response = 200
             body = {'status': 'true', 'items': switches}
 
+        # picount
+        # curl <ServerIP>:8880/getpi
+        elif self.path.upper() == "/picount".upper():
+            print("picount")
+            response = 200
+            body = {'status': 'true', 'count': len(pi_list)}
+
         # Free Pi
         # curl http://<ServerIP>/freepi
         elif self.path.upper() == "/freepi".upper():
             response = 200
-            body = {'status': 'false'}
+            result, ip = getFreePi()
 
-            # There is probably a better way to do this but this is how we are doing it for now:
-            # 1. get all the registered Pi
-            # 2. Pick 3 of them at random
-            # 3. Find the first one with less than 30% CPU Usage and return it
-            # 4. If none are found, then search the entire list of registered Pi
-            found = false
-            keysList = []
-
-            with lock:
-                keysList = list(pi_list.keys())
-
-            keysList = random.choices(keysList, k=3)
-
-            for key in keysList:
-                pi = pi_list[key]
-                print(pi)
-
-                if 'ip' in pi:
-                    try:
-                        ip_address = pi['ip']
-                        headers = {'Content-type': 'application/json'}
-                        response = requests.get('http://' + ip_address + ':8880/getpiinfo', headers = headers)
-                        print(response)
-                        message = response.json()
-
-                        if "status" in message and message["status"] == 'true':
-                            if "CPU" in message:
-                                cpu = message['CPU']
-                                cpu = cpu[:-1]
-
-                                if cpu < 30:
-                                    body = {'status': 'true', "ip": ip_address}
-                                    break
-
-                    except socket.error:
-                        print("error")
-
-            if not found:
-                with lock:
-                    keysList = list(pi_list.keys())
-
-                for key in keysList:
-                    pi = pi_list[key]
-                    print(pi)
-
-                    if 'ip' in pi:
-                        try:
-                            ip_address = pi['ip']
-                            headers = {'Content-type': 'application/json'}
-                            response = requests.get('http://' + ip_address + ':8880/getpiinfo', headers = headers)
-                            print(response)
-                            message = response.json()
-
-                            if "status" in message and message["status"] == 'true':
-                                if "CPU" in message:
-                                    cpu = message['CPU']
-                                    cpu = cpu[:-1]
-
-                                    if cpu < 30:
-                                        body = {'status': 'true', "ip": ip_address}
-                                        break
-
-                        except socket.error:
-                            print("error")
+            if result:
+                body = {'status': 'true', "ip": ip}
+            else:
+                body = {'status': 'false'}
 
 
         self.send_response(response)
@@ -292,10 +274,7 @@ class Handler(BaseHTTPRequestHandler):
                     try:
                         ip_address = pi['ip']
                         data = {'command': command}
-                        headers = {'Content-type': 'application/json'}
-                        response = requests.post('http://' + ip_address + ':8880/runnow', data = json.dumps(data), headers = headers)
-                        print(response)
-                        message = response.json()
+                        message = requests.post('http://' + ip_address + ':8880/runnow', data = json.dumps(data), headers = {'Content-type': 'application/json'}).json()
 
                         if message["status"] == 'true':
                             print("success")
@@ -338,6 +317,8 @@ class Handler(BaseHTTPRequestHandler):
                     pi = pi_list[ip]
                     if pi:
                         body = {'status': 'true', 'pi': pi}
+            else:
+                body = {'status': 'true', 'items': pi_list}
 
 
         # SetPort
@@ -366,6 +347,8 @@ class Handler(BaseHTTPRequestHandler):
                 if ip in port_list:
                     port = port_list[ip]
                     body = {'status': 'true', 'port': port}
+            else:
+                body = {'status': 'true', 'items': port_list}
 
 
         # AddSwitch
@@ -378,18 +361,18 @@ class Handler(BaseHTTPRequestHandler):
             ip = message['ip']
             pi = {'ip': ip, 'switch_ip': switch_ip}
 
-            if switch_ip not in switches:
-                switches[switch_ip] = []
-
-            found = False
-            for element in switches[switch_ip]:
-                print(element)
-                if ip == element['ip']:
-                    element = pi
-                    found = True
-
-            if not found:
-                switches[switch_ip].append(pi)
+            # if switch_ip not in switches:
+            #     switches[switch_ip] = []
+            #
+            # found = False
+            # for element in switches[switch_ip]:
+            #     print(element)
+            #     if ip == element['ip']:
+            #         element = pi
+            #         found = True
+            #
+            # if not found:
+            #     switches[switch_ip].append(pi)
 
             pi_switches[ip] = switch_ip
 
@@ -402,15 +385,27 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.upper() == "/getswitch".upper():
             print("getswitch")
             response = 200
-            switch_ip = message["switch_ip"]
-            items = switches[switch_ip]
-            body = {'status': 'true', 'items': items}
+            if "ip" in message:
+                switch_ip = pi_switches[message['ip']]
+                body = {'status': 'true', 'switch_ip': switch_ip}
+            # if "switch_ip" in message:
+            #     switch_ip = message["switch_ip"]
+            #     items = switches[switch_ip]
+            #     body = {'status': 'true', 'items': items}
+            else:
+               body = {'status': 'false'}
+
+        elif self.path.upper() == "/yark".upper():
+            print("test")
+            response = 200
+            body = {'value': pi_switches}
 
 
         # SetPiGroup
         # curl -X POST -H "Content-Type: application/json" -d '{'location': 'front, back', 'switch_ip': switch_ip}' http://<ServerIP>/getpigroup
         # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\"}" http://192.168.1.51:8880/getpigroup
         elif self.path.upper() == "/setpigroup".upper():
+            print("setpigroup")
             response = 200
             switch_ip = message["switch_ip"]
             location = message['location']
@@ -428,6 +423,7 @@ class Handler(BaseHTTPRequestHandler):
         # curl -X POST -H "Content-Type: application/json" -d '{'location': 'all, front, back'}' http://<ServerIP>/getpigroup
         # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\"}" http://192.168.1.51:8880/getpigroup
         elif self.path.upper() == "/getpigroup".upper():
+            print("getpigroup")
             items = []
             response = 200
             location = message['location']
@@ -447,7 +443,7 @@ class Handler(BaseHTTPRequestHandler):
         # curl -X POST -H "Content-Type: application/json" -d '{'ip': ip_address}' http://<ServerIP>/getpiswitch
         # Example: curl -X POST -H "Content-Type: application/json" -d "{\"ip\":\"1.2.3.4\"}" http://192.168.1.51:8880/getpiswitch
         elif self.path.upper() == "/getpiswitch".upper():
-            print("getport")
+            print("getpiswitch")
             response = 200
             ip = message["ip"]
             if ip in pi_switches:

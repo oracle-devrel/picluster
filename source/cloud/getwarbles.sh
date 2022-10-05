@@ -1,3 +1,10 @@
 #!/bin/sh
 
-python3 twitter.py pi 2022-04--01
+day=$(date +%d)
+day=$((day-1))
+from=$(date +%Y-%m--)
+echo ${from}${day}
+
+
+#python3 twitter.py BiGPiClusterInMyGarage ${from}${day}
+python3 twitter.py pi ${from}${day}
