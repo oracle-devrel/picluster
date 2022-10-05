@@ -99,6 +99,11 @@ def warble_background_thread(name):
                 username = tweet['username']
                 #TODO find pi, send it to pi
 
+                result, ip = getFreePi()
+
+                if result:
+                    sendToPi(ip, code, username, tweet)
+
         except socket.error:
             print("error with server {}", WARBLE_SERVER)
 
@@ -117,6 +122,18 @@ def isValidIp(address):
             return False
 
     return True
+
+
+def sendToPi(ip, code, username, tweet):
+    try:
+        data = {'ip': ip, 'code': code, 'username': username, 'tweet': tweet}
+        headers = {'Content-type': 'application/json'}
+        response = requests.get('http://' + ip + ':8880/code', data = json.dumps(data), headers = headers)
+        print(response)
+
+    except socket.error:
+        print("error")
+
 
 def getFreePi():
     result = False
