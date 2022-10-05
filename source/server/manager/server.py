@@ -13,7 +13,8 @@ import socket
 from datetime import datetime
 from threading import RLock
 import random
-
+from decimal import Decimal, ROUND_HALF_EVEN
+import math
 
 # pip install requests
 
@@ -214,7 +215,7 @@ class Handler(BaseHTTPRequestHandler):
                                     cpu = message['CPU']
                                     cpu = cpu[:-1]
                                     print(cpu)
-                                    if Decimal(cpu) < Decimal(30.0):
+                                    if math.ceil(cpu) < 30:
                                         body = {'status': 'true', "ip": this_ip}
                                     break
 
