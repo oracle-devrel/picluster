@@ -124,8 +124,13 @@ class Parser:
         utils.debug('parseStatement {}'.format(self.curToken.text))
         # Check the first token to see what kind of statement this is.
 
+        # }
+        if self.checkToken(TokenType.END):
+            # Do nothing
+            continue
+
         # IF ( comparison ) block
-        if self.checkToken(TokenType.IF):
+        elif self.checkToken(TokenType.IF):
             self.nextToken()
             self.match(TokenType.BEGIN)
             self.emitter.emit(self.getIndent() + "if (")
