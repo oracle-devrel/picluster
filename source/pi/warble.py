@@ -23,6 +23,8 @@ def main():
     if args.verbose:
         utils.verbose = True
 
+    input = input.replace("\"", "\\\"")
+
     stream = os.popen('python3 ../warble/warblecc.py --username {} \"{}\"'.format(username, input))
     output = stream.read()
 
