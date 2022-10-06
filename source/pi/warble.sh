@@ -49,27 +49,32 @@ then
   curl -s -X POST $GRAALVISOR_IP:$GRAALVISOR_PORT -H 'Content-Type: application/json' -d $'{"name":"warble","async":"false","arguments":"[\'-v\',\'--username\',\'\\"'$USERNAME$'\\"\',\''$CODE$'\']"}'
 elif [ -z "$MODE" ] || [ "$MODE" == "python" ]
 then
-  python3 warblecc.py --username ${USERNAME} ${CODE}
+  OUTPUT=$(python3 warblecc.py --username ${USERNAME} ${CODE})
+  JSON_TEMPLATE='{ "tweet": "%s", "code": "%s", "output": "%s" }'
+  JSON=""
+  printf -v JSON "$JSON_TEMPLATE" "$TWEET" "$CODE" "$OUTPUT"
+  echo $JSON
+  curl -X POST -H "Content-Type: application/json" -d "$JSON" $URL
 else
   echo "Only 'python' (default) and 'gv' modes are supported."
   exit 1
 fi
 
-PROGRAM="out.py"
-OUTPUT=$(python3 $PROGRAM)
-
-if test -f $PROGRAM; then
-  JSON_TEMPLATE='{ "tweet": "%s", "code": "%s", "output": "%s" }'
-
-  JSON=""
-  printf -v JSON "$JSON_TEMPLATE" "$TWEET" "$CODE" "$OUTPUT"
-  #echo $JSON
-
-  rm $PROGRAM
-
-  if [ -n "$var" ]
-  then
-    curl -X POST -H "Content-Type: application/json" -d "$JSON" $URL
-  fi
+# PROGRAM="out.py"
+# OUTPUT=$(python3 $PROGRAM)
+#
+# if test -f $PROGRAM; then
+#   JSON_TEMPLATE='{ "tweet": "%s", "code": "%s", "output": "%s" }'
+#
+#   JSON=""
+#   printf -v JSON "$JSON_TEMPLATE" "$TWEET" "$CODE" "$OUTPUT"
+#   #echo $JSON
+#
+#   rm $PROGRAM
+#
+#   if [ -n "$var" ]
+#   then
+#     curl -X POST -H "Content-Type: application/json" -d "$JSON" $URL
+#   fi
 
 popd
