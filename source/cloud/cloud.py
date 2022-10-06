@@ -31,15 +31,15 @@ class GetWarblesThread:
 
     def run(self):
         while True:
-            #time.sleep(60 * 10) # delay for 10 minutes
-            time.sleep(10)
-
             if not self._running:
                 break
 
             print("read warbles")
             #os.system('bash getwarbles.sh')
             os.system('source ../../../settwit.sh && bash getwarbles.sh')
+
+            #time.sleep(60 * 10) # delay for 10 minutes
+            time.sleep(10)
 
 
 #WarblesThread = GetWarblesThread()
