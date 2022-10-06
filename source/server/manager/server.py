@@ -97,7 +97,7 @@ def warble_background_thread(name):
                     print("thumbs up")
                     code = item['code']
                     tweet = item['tweet']
-                    username = item['username']
+                    username = item['tweet']['username']
                     print("{} {} {}".format(code, tweet, username))
 
                     # result, ip = getFreePi()
