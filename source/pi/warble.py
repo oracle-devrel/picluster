@@ -23,11 +23,11 @@ def main():
     if args.verbose:
         utils.verbose = True
 
-    stream = os.popen('python3 ../warblecc.py {} {}'.format(code, username))
+    stream = os.popen('python3 ../warblecc.py {} {}'.format(input, username))
     output = stream.read()
 
     try:
-        data = { "tweet": tweet, "code": code, "output": output }
+        data = { "tweet": tweet, "code": input, "output": output }
         print(data)
         # headers = {'Content-type': 'application/json'}
         # response = requests.post(url, data=json.dumps(data), headers=headers)
