@@ -92,19 +92,18 @@ def warble_background_thread(name):
             print(response)
             message = response.json()
 
-            for item in message['items']:
-                print("here" + item)
-            # if message["status"] == 'true':
-            #     print("thumbs up")
-            #     code = message['code']
-            #     tweet = message['tweet']
-            #     username = tweet['username']
-            #     #TODO find pi, send it to pi
-            #
-            #     result, ip = getFreePi()
-            #
-            #     if result:
-            #         sendToPi(ip, code, username, tweet)
+            if message["status"] == 'true':
+                for item in message['items']:
+                    print("thumbs up")
+                    code = item['code']
+                    tweet = item['tweet']
+                    username = item['username']
+                    print("{} {} {}".format(code, tweet, username))
+
+                    # result, ip = getFreePi()
+                    #
+                    # if result:
+                    #     sendToPi(ip, code, username, tweet)
 
         except socket.error:
             print("error with server {}", WARBLE_SERVER)
