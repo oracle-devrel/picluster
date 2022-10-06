@@ -14,7 +14,7 @@ def getEnvironmentVariable(name):
     if name in os.environ:
         return os.getenv(name)
     else:
-        print("Error: environment variable {name} does not exist.".format(name = name))
+        #print("Error: environment variable {name} does not exist.".format(name = name))
         quit()
 
 
@@ -22,7 +22,7 @@ def getEnvironmentVariableDefault(name, value):
     if name in os.environ:
         return os.getenv(name)
     else:
-        print("Error: environment variable {name} does not exist.".format(name = name))
+        #print("Error: environment variable {name} does not exist.".format(name = name))
         return value
 
 

@@ -35,7 +35,7 @@ def main():
     parse.program()
     emitter.writeFile()
     emitter.run()
-    print("Transpiling complete.")
+    #print("Transpiling complete.")
 
 if __name__ == "__main__":
     main()
