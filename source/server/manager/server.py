@@ -126,7 +126,7 @@ def isValidIp(address):
 
 def sendToPi(ip, code, username, tweet):
     try:
-        data = {'ip': ip, 'code': code, 'username': username, 'tweet': tweet}
+        data = {'ip': ip, 'code': code, 'username': username, 'tweet': tweet, 'url': WARBLE_SERVER}
         headers = {'Content-type': 'application/json'}
         response = requests.get('http://' + ip + ':8880/code', data = json.dumps(data), headers = headers)
         print(response)

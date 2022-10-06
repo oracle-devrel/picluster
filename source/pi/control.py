@@ -485,26 +485,22 @@ class Handler(BaseHTTPRequestHandler):
         # Code
         # curl -X POST -H "Content-Type: application/json" -d '{"code":"{...}"}' http://<ServerIP>/code
         elif self.path.upper() == "/code".upper():
-            code = message['code']
-            tweet = message['tweet']
-            username = items['username']
+            try:
+                code = message['code']
+                tweet = message['tweet']
+                username = message['username']
 
-            # if WARBLE_URL is not None:
-            #     url = message["url"]
-            #     response = 200
-            #     body = {'success': 'true'}
-            #     #os.system('python3 warblecc.py \"' + code + '"')
-            #     os.system('bash warble.sh {} \"{}\" {} {}'.format(
-            #         username, code, WARBLE_URL, tweet))
-            # else:
-            #     response = 200
-            #     #os.system('python3 warblecc.py \"' + code + '"')
-            #     # os.system('bash warble.sh {} \"{}\" {}'.format(username, code)
-            #     # TODO call warble.sh without url and get the return value here.
-            #     stream = os.popen(
-            #         'bash warble.sh {} \"{}\" {}'.format(username, code, ""))
-            #     output = stream.read()
-            #     body = {'success': 'true', 'output': output}
+
+                response = 200
+                #os.system('python3 warblecc.py \"' + code + '"')
+                # os.system('bash warble.sh {} \"{}\" {}'.format(username, code)
+                # TODO call warble.sh without url and get the return value here.
+                stream = os.popen(
+                    'bash warble.sh {} \"{}\" {}'.format(username, code, ""))
+                output = stream.read()
+                body = {'success': 'true', 'output': output}
+            except:
+                body = {'success': 'true'}
 
         # Set Data
         # curl -X POST -H "Content-Type: application/json" -d '{}' http://<ServerIP>/setdata
