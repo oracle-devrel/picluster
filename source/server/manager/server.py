@@ -31,6 +31,7 @@ pi_switches = dict([]) # IP -> Switch IP
 SLEEP = 20
 
 WARBLE_SERVER = os.getenv('WARBLE_SERVER')
+WARBLE_OUTGOING_SERVER = = os.getenv('WARBLE_OUTGOING_SERVER')
 
 def register_pi(ip_address, mac_address):
     with lock:
@@ -100,10 +101,10 @@ def warble_background_thread(name):
                     username = item['tweet']['username']
                     print("{} {} {}".format(code, tweet, username))
 
-                    # result, ip = getFreePi()
-                    #
-                    # if result:
-                    #     sendToPi(ip, code, username, tweet)
+                    result, ip = getFreePi()
+
+                    if result:
+                        sendToPi(ip, code, username, tweet, WARBLE_OUTGOING_SERVER)
 
         except socket.error:
             print("error with server {}", WARBLE_SERVER)
@@ -125,9 +126,9 @@ def isValidIp(address):
     return True
 
 
-def sendToPi(ip, code, username, tweet):
+def sendToPi(ip, code, username, tweet, url):
     try:
-        data = {'ip': ip, 'code': code, 'username': username, 'tweet': tweet, 'url': WARBLE_SERVER}
+        data = {'ip': ip, 'code': code, 'username': username, 'tweet': tweet, 'url': url}
         headers = {'Content-type': 'application/json'}
         response = requests.get('http://' + ip + ':8880/code', data = json.dumps(data), headers = headers)
         print(response)
