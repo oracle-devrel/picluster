@@ -23,7 +23,7 @@ def main():
     if args.verbose:
         utils.verbose = True
 
-    stream = os.popen('python3 ../warblecc.py --username {} {}'.format(username, input))
+    stream = os.popen('python3 ../warble/warblecc.py --username {} {}'.format(username, input))
     output = stream.read()
 
     try:
