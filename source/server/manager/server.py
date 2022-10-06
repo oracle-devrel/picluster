@@ -134,7 +134,7 @@ def sendToPi(ip, code, username, tweet, url):
         print(response)
 
     except socket.error:
-        print("error")
+        print("error here")
 
 
 def getFreePi():
@@ -167,7 +167,7 @@ def getFreePi():
                             break
 
             except socket.error:
-                print("error here")
+                print("error")
     except:
         print("error freepi")
 
