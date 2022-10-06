@@ -31,11 +31,11 @@ def main():
     try:
         data = { "tweet": tweet, "code": input, "output": output }
         print(data)
-        # headers = {'Content-type': 'application/json'}
-        # response = requests.post(url, data=json.dumps(data), headers=headers)
-        # message = response.json()
-        # if message["status"] == 'true':
-        #   print(data)
+        headers = {'Content-type': 'application/json'}
+        response = requests.post(url, data=json.dumps(data), headers=headers)
+        message = response.json()
+        if message["status"] == 'true':
+          print(data)
 
     except socket.error:
         print("error")
