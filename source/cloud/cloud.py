@@ -187,16 +187,16 @@ class Handler(BaseHTTPRequestHandler):
             body = {'status': 'false'}
 
             try:
-                db = pd.DataFrame(columns=['username',
-                                           'description',
-                                           'location',
-                                           'following',
-                                           'followers',
-                                           'totaltweets',
-                                           'retweetcount',
-                                           'text',
-                                           'hashtags',
-                                           'created_at'])
+                # db = pd.DataFrame(columns=['username',
+                #                            'description',
+                #                            'location',
+                #                            'following',
+                #                            'followers',
+                #                            'totaltweets',
+                #                            'retweetcount',
+                #                            'text',
+                #                            'hashtags',
+                #                            'created_at'])
 
                 username = message['username']
                 text = message['text']
