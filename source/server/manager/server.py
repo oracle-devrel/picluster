@@ -92,7 +92,7 @@ def warble_background_thread(name):
             print(response)
             message = response.json()
 
-            for item in message['items']
+            for item in message['items']:
                 print("here" + item)
             # if message["status"] == 'true':
             #     print("thumbs up")
