@@ -213,7 +213,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
                 db.to_csv(filename)
-                body = {'status': 'true', "filename": filename, "text": text}
+                body = {'status': 'true'}
             except:
                 print("error")
 
