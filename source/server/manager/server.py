@@ -131,7 +131,7 @@ def sendToPi(ip, code, username, tweet, url):
         data = {'ip': ip, 'code': code, 'username': username, 'tweet': tweet, 'url': url}
         headers = {'Content-type': 'application/json'}
         response = requests.get('http://' + ip + ':8880/code', data = json.dumps(data), headers = headers)
-        print(response)
+        print('sent')
 
     except socket.error:
         print("error here")
