@@ -485,18 +485,14 @@ class Handler(BaseHTTPRequestHandler):
         # Code
         # curl -X POST -H "Content-Type: application/json" -d '{"code":"{...}"}' http://<ServerIP>/code
         elif self.path.upper() == "/code".upper():
+            response = 200
+
             try:
                 code = message['code']
                 tweet = message['tweet']
                 username = message['username']
-
-
-                response = 200
-                #os.system('python3 warblecc.py \"' + code + '"')
-                # os.system('bash warble.sh {} \"{}\" {}'.format(username, code)
-                # TODO call warble.sh without url and get the return value here.
-                stream = os.popen(
-                    'bash warble.sh {} \"{}\" {}'.format(username, code, ""))
+                url = message['url']
+                stream = os.popen('python3 warble.py --username {} --tweet {} --url {} {}'.format(username, tweet, url, code))
                 output = stream.read()
                 body = {'success': 'true', 'output': output}
             except:
