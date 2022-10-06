@@ -200,7 +200,7 @@ class Handler(BaseHTTPRequestHandler):
 
                 username = message['username']
                 text = message['text']
-                print(filename)
+                print(username)
                 print(text)
 
                 # ith_tweet = [username, "",
