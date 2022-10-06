@@ -184,33 +184,38 @@ class Handler(BaseHTTPRequestHandler):
 
         if self.path.upper() == "/code".upper():
             response = 200
-            db = pd.DataFrame(columns=['username',
-                                       'description',
-                                       'location',
-                                       'following',
-                                       'followers',
-                                       'totaltweets',
-                                       'retweetcount',
-                                       'text',
-                                       'hashtags',
-                                       'created_at'])
+            body = {'status': 'false'}
 
-            username = message['username']
-            text = message['text']
-            print(filename)
-            print(text)
-            
-            ith_tweet = [username, "",
-                         "", "",
-                         "", "",
-                         "", text, "#pi", datetime.now().strftime("%m/%d/%Y, %H:%M:%S")]
-            db.loc[len(db)] = ith_tweet
-            path = './warble_data'
-            filename = path + '/scraped_tweets{}.csv'.format(getNextNum(path))
+            try:
+                db = pd.DataFrame(columns=['username',
+                                           'description',
+                                           'location',
+                                           'following',
+                                           'followers',
+                                           'totaltweets',
+                                           'retweetcount',
+                                           'text',
+                                           'hashtags',
+                                           'created_at'])
+
+                username = message['username']
+                text = message['text']
+                print(filename)
+                print(text)
+
+                ith_tweet = [username, "",
+                             "", "",
+                             "", "",
+                             "", text, "#pi", datetime.now().strftime("%m/%d/%Y, %H:%M:%S")]
+                db.loc[len(db)] = ith_tweet
+                path = './warble_data'
+                filename = path + '/scraped_tweets{}.csv'.format(getNextNum(path))
 
 
-            db.to_csv(filename)
-            body = {'status': 'true', "filename": filename, "text": text}
+                db.to_csv(filename)
+                body = {'status': 'true', "filename": filename, "text": text}
+            except:
+                print("error")
 
 
         self.send_response(response)
