@@ -203,17 +203,17 @@ class Handler(BaseHTTPRequestHandler):
                 print(filename)
                 print(text)
 
-                ith_tweet = [username, "",
-                             "", "",
-                             "", "",
-                             "", text, "#pi", datetime.now().strftime("%m/%d/%Y, %H:%M:%S")]
-                db.loc[len(db)] = ith_tweet
-                path = './warble_data'
-                filename = path + '/scraped_tweets{}.csv'.format(getNextNum(path))
-
-
-                db.to_csv(filename)
-                body = {'status': 'true', "filename": filename, "text": text}
+                # ith_tweet = [username, "",
+                #              "", "",
+                #              "", "",
+                #              "", text, "#pi", datetime.now().strftime("%m/%d/%Y, %H:%M:%S")]
+                # db.loc[len(db)] = ith_tweet
+                # path = './warble_data'
+                # filename = path + '/scraped_tweets{}.csv'.format(getNextNum(path))
+                #
+                #
+                # db.to_csv(filename)
+                # body = {'status': 'true', "filename": filename, "text": text}
             except:
                 print("error")
 
