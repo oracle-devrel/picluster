@@ -197,7 +197,9 @@ class Handler(BaseHTTPRequestHandler):
 
             username = message['username']
             text = message['text']
-
+            print(filename)
+            print(text)
+            
             ith_tweet = [username, "",
                          "", "",
                          "", "",
@@ -205,8 +207,7 @@ class Handler(BaseHTTPRequestHandler):
             db.loc[len(db)] = ith_tweet
             path = './warble_data'
             filename = path + '/scraped_tweets{}.csv'.format(getNextNum(path))
-            print(filename)
-            print(text)
+
 
             db.to_csv(filename)
             body = {'status': 'true', "filename": filename, "text": text}
