@@ -22,6 +22,7 @@ hostName = "0.0.0.0"
 serverPort = 8880
 
 tag = "#pi"
+DEBUG = False
 
 def getNextNum(path):
     #path = '.'
@@ -112,10 +113,11 @@ def getTweetBatch():
 
                 result.append(item)
 
-        if os.path.exists(lfilename):
-            p = Path(lfilename)
-            print("renaming " + lfilename)
-            p.rename(p.with_suffix('.old'))
+        if not DEBUG:
+            if os.path.exists(lfilename):
+                p = Path(lfilename)
+                print("renaming " + lfilename)
+                p.rename(p.with_suffix('.old'))
 
     return result
 
@@ -135,6 +137,11 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             content = open('index.html', 'rb').read()
             self.wfile.write(content)
+
+        elif self.path.upper() == "/debug".upper():
+            global DEBUG
+            DEBUG = not DEBUG
+            body = {'status': 'true'}
 
         # Start
         # curl http://<ServerIP>/start
