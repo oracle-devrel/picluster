@@ -125,7 +125,7 @@ class Parser:
         # Check the first token to see what kind of statement this is.
 
         # }
-        if self.checkToken(TokenType.END):
+        if self.checkToken(TokenType.END_BLOCK):
             # Do nothing
             pass
 
