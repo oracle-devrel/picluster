@@ -86,20 +86,20 @@ class Parser:
 
     # program ::= {statement}
     def program(self):
-        self.emitter.headerLine("#!/usr/bin/python3")
+        #self.emitter.headerLine("#!/usr/bin/python3")
         self.emitter.emitLine("import warbleapi")
 
         while self.checkToken(TokenType.NEWLINE):
             self.nextToken()
 
         if self.username is not None:
-            self.emitter.emitLine("warbleapi.setUsername({})".format(self.username))
+            self.emitter.emitLine("setUsername({})".format(self.username))
 
-        self.emitter.emitLine("def main():")
-        self.incIndent()
+        #self.emitter.emitLine("def main():")
+        #self.incIndent()
         self.parseBlock()
-        self.decIndent()
-        self.emitter.emitLine("main()")
+        #self.decIndent()
+        #self.emitter.emitLine("main()")
 
 
     def parseBlock(self):

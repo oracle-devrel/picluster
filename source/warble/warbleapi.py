@@ -3,6 +3,9 @@ import os
 import socket
 import requests
 import time
+import math
+from decimal import getcontext
+
 #import wget
 # from pydub import AudioSegment
 # from pydub.playback import play
@@ -13,6 +16,14 @@ def getEnvironmentVariable(name):
     else:
         print("Error: environment variable {name} does not exist.".format(name = name))
         quit()
+
+
+def getEnvironmentVariableDefault(name, value):
+    if name in os.environ:
+        return os.getenv(name)
+    else:
+        print("Error: environment variable {name} does not exist.".format(name = name))
+        return value
 
 
 def get_ip():
@@ -28,7 +39,9 @@ def get_ip():
 
 
 IP_ADDRESS = get_ip()
-SERVER_IP = getEnvironmentVariable('SERVER_IP')
+SERVER_IP = getEnvironmentVariableDefault('SERVER_IP', None)
+LIGHT_IP = getEnvironmentVariableDefault('LIGHT_IP', None)
+SOUND_IP = getEnvironmentVariableDefault('SOUND_IP', None)
 USERNAME = ''
 
 
@@ -92,15 +105,16 @@ def drawline(x1, y1, x2, y2, r, g, b):
 
 
 def lights(i, r, g, b):
-    try:
-        data = {'index': i, 'data': [r, g, b]}
-        headers = {'Content-type': 'application/json'}
-        response = requests.post('http://' + LIGHT_IP, data = json.dumps(data), headers = headers)
-        message = response.json()
-        if message["status"] == 'true':
-            print('success')
-    except socket.error:
-        print("error")
+    if LIGHT_IP != None:
+        try:
+            data = {'index': i, 'data': [r, g, b]}
+            headers = {'Content-type': 'application/json'}
+            response = requests.post('http://' + LIGHT_IP, data = json.dumps(data), headers = headers)
+            message = response.json()
+            if message["status"] == 'true':
+                print('success')
+        except socket.error:
+            print("error")
 
 
 def sleep(t):
@@ -108,26 +122,24 @@ def sleep(t):
 
 
 def play_sound(url):
-    try:
-        data = {'url': url}
-        headers = {'Content-type': 'application/json'}
-        response = requests.post('http://' + SOUND_IP, data = json.dumps(data), headers = headers)
-        message = response.json()
-        if message["status"] == 'true':
-            print('success')
-    except socket.error:
-        print("error")
-    #os.system('python3 playsound.py --url {}'.format(url))
-
-
-from decimal import getcontext
+    if SOUND_IP != None:
+        try:
+            data = {'url': url}
+            headers = {'Content-type': 'application/json'}
+            response = requests.post('http://' + SOUND_IP, data = json.dumps(data), headers = headers)
+            message = response.json()
+            if message["status"] == 'true':
+                print('success')
+        except socket.error:
+            print("error")
+        #os.system('python3 playsound.py --url {}'.format(url))
 
 
 def setPrecision(precision):
     getcontext().prec = precision
 
 
-from math import acos
+#from math import acos
 
 
 def acos(value):
@@ -146,8 +158,8 @@ def acos(value):
 #math.tan(x)
 
 
-def round(value):
-    return math.round(value)
+# def round(value, digits):
+#     return math.round(value, digits)
 
 
 def setData(name, value):
@@ -175,30 +187,34 @@ def getData(name):
     except socket.error:
         print("error")
 
+    return None
+
 
 def save(name, value):
-    try:
-        data = {'name': getUsername() + name, 'value': value}
-        headers = {'Content-type': 'application/json'}
-        response = requests.post('http://' + SERVER_IP + '/save', data = json.dumps(data), headers = headers)
-        message = response.json()
-        if message["status"] == 'true':
-            print('success')
-    except socket.error:
-        print("error")
+    if SERVER_IP != None:
+        try:
+            data = {'name': getUsername() + name, 'value': value}
+            headers = {'Content-type': 'application/json'}
+            response = requests.post('http://' + SERVER_IP + '/save', data = json.dumps(data), headers = headers)
+            message = response.json()
+            if message["status"] == 'true':
+                print('success')
+        except socket.error:
+            print("error")
 
 
 def load(name):
-    try:
-        data = {'name': getUsername() + name}
-        headers = {'Content-type': 'application/json'}
-        response = requests.post('http://' + SERVER_IP + '/load', data = json.dumps(data), headers = headers)
-        message = response.json()
-        if message["status"] == 'true':
-            print('success')
-            if 'value' in message:
-                return message['value']
-    except socket.error:
-        print("error")
+    if SERVER_IP != None:
+        try:
+            data = {'name': getUsername() + name}
+            headers = {'Content-type': 'application/json'}
+            response = requests.post('http://' + SERVER_IP + '/load', data = json.dumps(data), headers = headers)
+            message = response.json()
+            if message["status"] == 'true':
+                print('success')
+                if 'value' in message:
+                    return message['value']
+        except socket.error:
+            print("error")
 
     return None

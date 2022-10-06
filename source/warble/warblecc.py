@@ -8,6 +8,7 @@ import emit
 import parser
 import utils
 
+
 # Run: python3 warblecc.py -v "{PRINT(\"test\")}"
 
 def main():
@@ -33,6 +34,7 @@ def main():
 
     parse.program()
     emitter.writeFile()
+    emitter.run()
     print("Transpiling complete.")
 
 if __name__ == "__main__":
