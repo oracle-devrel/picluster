@@ -492,7 +492,9 @@ class Handler(BaseHTTPRequestHandler):
                 tweet = message['tweet']
                 username = message['username']
                 url = message['url']
-                stream = os.popen('python3 warble.py --username {} --tweet {} --url {} {}'.format(username, tweet, url, code))
+                command = 'python3 warble.py --username {} --tweet {} --url {} {}'.format(username, tweet, url, code)
+                print(command)
+                stream = os.popen(command)
                 output = stream.read()
                 body = {'success': 'true', 'output': output}
             except:
