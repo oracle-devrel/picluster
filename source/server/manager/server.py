@@ -31,7 +31,7 @@ pi_switches = dict([]) # IP -> Switch IP
 SLEEP = 20
 
 WARBLE_SERVER = os.getenv('WARBLE_SERVER')
-WARBLE_OUTGOING_SERVER = = os.getenv('WARBLE_OUTGOING_SERVER')
+WARBLE_OUTGOING_SERVER = os.getenv('WARBLE_OUTGOING_SERVER')
 
 def register_pi(ip_address, mac_address):
     with lock:
