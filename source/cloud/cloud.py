@@ -16,7 +16,7 @@ from pathlib import Path
 # pip install requests
 
 hostName = "0.0.0.0"
-serverPort = 80
+serverPort = 8880
 
 tag = "#pi"
 
