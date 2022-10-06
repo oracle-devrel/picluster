@@ -127,7 +127,7 @@ class Parser:
         # }
         if self.checkToken(TokenType.END):
             # Do nothing
-            continue
+            pass
 
         # IF ( comparison ) block
         elif self.checkToken(TokenType.IF):
