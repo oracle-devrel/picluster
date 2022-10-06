@@ -209,6 +209,7 @@ class Handler(BaseHTTPRequestHandler):
             print(text)
 
             db.to_csv(filename)
+            body = {'status': 'true', "filename": filename, "text": text}
 
 
         self.send_response(response)
