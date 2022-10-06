@@ -3,6 +3,7 @@
 import argparse
 import sys
 import requests
+import os
 
 # Run: python3 warblec.py -v "{PRINT(\"test\")}"
 
