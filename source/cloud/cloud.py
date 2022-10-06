@@ -12,6 +12,9 @@ from datetime import datetime
 from threading import RLock
 import pandas as pd
 from pathlib import Path
+import pandas as pd
+from datetime import datetime
+
 
 # pip install requests
 
@@ -20,7 +23,15 @@ serverPort = 8880
 
 tag = "#pi"
 
+def getNextNum(path):
+    #path = '.'
+    files = os.listdir(path)
 
+    csv_files = [i for i in files if i.endswith('.csv')]
+    old_files = [i for i in files if i.endswith('.old')]
+
+    return len(csv_files) + len(old_files)
+    
 class GetWarblesThread:
     def __init__(self):
         self._running = True
@@ -158,6 +169,51 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(bytes(json.dumps(body), "utf8"))
 
+    def do_POST(self):
+        # refuse to receive non-json content
+        if self.headers.get('content-type') != 'application/json':
+            self.send_response(400)
+            self.end_headers()
+            return
+
+        length = int(self.headers.get('content-length'))
+        message = json.loads(self.rfile.read(length))
+
+        response = 0
+        body = {}
+
+        if self.path.upper() == "/code".upper():
+            response = 200
+            db = pd.DataFrame(columns=['username',
+                                       'description',
+                                       'location',
+                                       'following',
+                                       'followers',
+                                       'totaltweets',
+                                       'retweetcount',
+                                       'text',
+                                       'hashtags',
+                                       'created_at'])
+
+            username = message['username']
+            text = message['text']
+
+            ith_tweet = [username, "",
+                         "", "",
+                         "", "",
+                         "", text, "#pi", datetime.now().strftime("%m/%d/%Y, %H:%M:%S")]
+            db.loc[len(db)] = ith_tweet
+            path = './warble_data'
+            filename = path + '/scraped_tweets{}.csv'.format(getNextNum(path))
+
+            db.to_csv(filename)
+
+
+        self.send_response(response)
+        self.send_header("Content-type", "application/json")
+        self.end_headers()
+        self.wfile.write(bytes(json.dumps(body), "utf8"))
+        return
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
   """Handle requests in a separate thread."""
