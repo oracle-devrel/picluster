@@ -167,7 +167,7 @@ def getFreePi():
                             break
 
             except socket.error:
-                print("error")
+                print("error here")
     except:
         print("error freepi")
 
