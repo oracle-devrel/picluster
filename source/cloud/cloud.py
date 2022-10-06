@@ -31,7 +31,7 @@ def getNextNum(path):
     old_files = [i for i in files if i.endswith('.old')]
 
     return len(csv_files) + len(old_files)
-    
+
 class GetWarblesThread:
     def __init__(self):
         self._running = True
@@ -205,6 +205,8 @@ class Handler(BaseHTTPRequestHandler):
             db.loc[len(db)] = ith_tweet
             path = './warble_data'
             filename = path + '/scraped_tweets{}.csv'.format(getNextNum(path))
+            print(filename)
+            print(text)
 
             db.to_csv(filename)
 
