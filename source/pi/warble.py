@@ -36,7 +36,7 @@ def main():
         data = { "username": username, "code": input, "output": output }
         print(data)
         headers = {'Content-type': 'application/json'}
-        response = requests.post(url, data=data, headers=headers)
+        response = requests.post(url, data=json.dumps(data), headers=headers)
 
     except socket.error:
         print("error")
