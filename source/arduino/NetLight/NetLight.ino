@@ -20,7 +20,7 @@ EthernetServer server(80);
 //IPAddress ip();
 IPAddress ip(170, 20, 0, 20);
 
-#define LED_COUNT  8 * 6
+#define LED_COUNT  8 * 4
 Adafruit_NeoPixel strip(LED_COUNT, ledPin, NEO_GRBW + NEO_KHZ800);
 
 #define DELAYVAL 500
