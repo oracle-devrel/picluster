@@ -19,7 +19,7 @@ from datetime import datetime
 # pip install requests
 
 hostName = "0.0.0.0"
-serverPort = 8880
+serverPort = 80
 
 tag = "#pi"
 DEBUG = False
