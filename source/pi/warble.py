@@ -19,20 +19,21 @@ def main():
     args = argparser.parse_args()
     input = args.code
     username = args.username
-    url = args.url
+    #url = args.url
     #tweet = args.tweet
+    # Hard coding URL because passed in as an argument it doesn't work for some reason.
+    url = "https://g2f4dc3e5463897-ardata.adb.uk-london-1.oraclecloudapps.com/ords/picluster/AR/warble/"
 
     if args.verbose:
         utils.verbose = True
 
-    input = input.replace("\"", "\\\"")
+    linput = input.replace("\"", "\\\"")
 
-    stream = os.popen('python3 ../warble/warblecc.py --username {} \"{}\"'.format(username, input))
+    stream = os.popen('python3 ../warble/warblecc.py --username {} \"{}\"'.format(username, linput))
     output = stream.read()
 
     try:
-        #data = { "tweet": tweet, "code": input, "output": output }
-        data = { "code": input, "output": output }
+        data = { "username": username, "code": input, "output": output }
         print(data)
         headers = {'Content-type': 'application/json'}
         response = requests.post(url, data=json.dumps(data), headers=headers)
