@@ -33,7 +33,7 @@ def main():
         parse.setUsername(username)
 
     parse.program()
-    emitter.writeFile()
+    #emitter.writeFile()
     emitter.run()
     #print("Transpiling complete.")
 
