@@ -31,6 +31,7 @@ pi_switches = dict([]) # IP -> Switch IP
 SLEEP = 20
 
 WARBLE_SERVER = os.getenv('WARBLE_SERVER')
+WARBLE_OUTGOING_SERVER = os.getenv('WARBLE_OUTGOING_SERVER')
 
 def register_pi(ip_address, mac_address):
     with lock:
@@ -51,7 +52,7 @@ def collect():
     for key in keysList:
         pi = pi_list[key]
         success = False
-        print(pi)
+        #print(pi)
 
         if 'ip' in pi:
             try:
@@ -93,16 +94,17 @@ def warble_background_thread(name):
             message = response.json()
 
             if message["status"] == 'true':
-                print("thumbs up")
-                code = message['code']
-                tweet = message['tweet']
-                username = tweet['username']
-                #TODO find pi, send it to pi
+                for item in message['items']:
+                    print("thumbs up")
+                    code = item['code']
+                    tweet = item['tweet']
+                    username = item['tweet']['username']
+                    print("{} {} {}".format(code, tweet, username))
 
-                result, ip = getFreePi()
+                    result, ip = getFreePi()
 
-                if result:
-                    sendToPi(ip, code, username, tweet)
+                    if result:
+                        sendToPi(ip, code, username, tweet, WARBLE_OUTGOING_SERVER)
 
         except socket.error:
             print("error with server {}", WARBLE_SERVER)
@@ -124,15 +126,16 @@ def isValidIp(address):
     return True
 
 
-def sendToPi(ip, code, username, tweet):
+def sendToPi(ip, code, username, tweet, url):
     try:
-        data = {'ip': ip, 'code': code, 'username': username, 'tweet': tweet}
+        #data = {'ip': ip, 'code': code, 'username': username, 'tweet': tweet, 'url': url}
+        data = {'ip': ip, 'code': code, 'username': username, 'url': url}
         headers = {'Content-type': 'application/json'}
-        response = requests.get('http://' + ip + ':8880/code', data = json.dumps(data), headers = headers)
+        response = requests.post('http://' + ip + ':8880/code', data = json.dumps(data), headers = headers)
         print(response)
 
     except socket.error:
-        print("error")
+        print("error here")
 
 
 def getFreePi():

@@ -86,20 +86,20 @@ class Parser:
 
     # program ::= {statement}
     def program(self):
-        self.emitter.headerLine("#!/usr/bin/python3")
+        #self.emitter.headerLine("#!/usr/bin/python3")
         self.emitter.emitLine("import warbleapi")
 
         while self.checkToken(TokenType.NEWLINE):
             self.nextToken()
 
         if self.username is not None:
-            self.emitter.emitLine("warbleapi.setUsername({})".format(self.username))
+            self.emitter.emitLine("warbleapi.setUsername(\"{}\")".format(self.username))
 
-        self.emitter.emitLine("def main():")
-        self.incIndent()
+        #self.emitter.emitLine("def main():")
+        #self.incIndent()
         self.parseBlock()
-        self.decIndent()
-        self.emitter.emitLine("main()")
+        #self.decIndent()
+        #self.emitter.emitLine("main()")
 
 
     def parseBlock(self):
@@ -124,8 +124,13 @@ class Parser:
         utils.debug('parseStatement {}'.format(self.curToken.text))
         # Check the first token to see what kind of statement this is.
 
+        # }
+        if self.checkToken(TokenType.END_BLOCK):
+            # Do nothing
+            pass
+
         # IF ( comparison ) block
-        if self.checkToken(TokenType.IF):
+        elif self.checkToken(TokenType.IF):
             self.nextToken()
             self.match(TokenType.BEGIN)
             self.emitter.emit(self.getIndent() + "if (")
@@ -292,6 +297,17 @@ class Parser:
                 self.parseArguments(functionTypes);
                 self.emitter.emit(")")
 
+        # SLEEP ( expression, expression, expression, expression )
+        elif self.checkToken(TokenType.SLEEP):
+            self.nextToken()
+
+            if self.checkToken(TokenType.BEGIN):
+                self.nextToken()
+                self.emitter.emit(self.getIndent() + "warbleapi.sleep(")
+                functionTypes = [self.parseExpression, self.parseExpression, self.parseExpression, self.parseExpression]
+                self.parseArguments(functionTypes);
+                self.emitter.emit(")")
+
         # LIGHTS ( expression, expression, expression, expression )
         elif self.checkToken(TokenType.LIGHTS):
             self.nextToken()
@@ -344,7 +360,7 @@ class Parser:
             self.emitter.emit(self.getIndent() + "warbleapi.save({}, {})\n".format(name, value))
 
         # LOAD ( string )
-    elif self.checkToken(TokenType.LOAD):
+        elif self.checkToken(TokenType.LOAD):
             self.nextToken()
             self.match(TokenType.BEGIN)
             name = self.curToken.text

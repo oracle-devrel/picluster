@@ -20,7 +20,7 @@ EthernetServer server(80);
 //IPAddress ip();
 IPAddress ip(170, 20, 0, 20);
 
-#define LED_COUNT  8
+#define LED_COUNT  8 * 6
 Adafruit_NeoPixel strip(LED_COUNT, ledPin, NEO_GRBW + NEO_KHZ800);
 
 #define DELAYVAL 500
@@ -160,7 +160,7 @@ void loop() {
     //Serial.println(doc["time"].as<long>());
     //Serial.println(doc["data"][0].as<long>());
     //Serial.println(doc["data"][1].as<long>());
-    int index = doc["index"].as<long>();
+    int index = doc["index"].as<long>(); 
     int r = doc["data"][0].as<long>();
     int g = doc["data"][1].as<long>();
     int b = doc["data"][2].as<long>();

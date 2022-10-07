@@ -8,13 +8,14 @@ import emit
 import parser
 import utils
 
+
 # Run: python3 warblecc.py -v "{PRINT(\"test\")}"
 
 def main():
     argparser = argparse.ArgumentParser(description='Warble is a Twitter Code Compiler')
-    argparser.add_argument('code', type=str, help='Tweet')
+    argparser.add_argument('code', type=str, help='code')
     argparser.add_argument('-v', '--verbose', action='store_true')
-    argparser.add_argument('-u', '--username', required=False, help='data paylod')
+    argparser.add_argument('-u', '--username', required=False, help='username')
     args = argparser.parse_args()
     input = args.code
     username = args.username
@@ -32,8 +33,9 @@ def main():
         parse.setUsername(username)
 
     parse.program()
-    emitter.writeFile()
-    print("Transpiling complete.")
+    #emitter.writeFile()
+    emitter.run()
+    #print("Transpiling complete.")
 
 if __name__ == "__main__":
     main()

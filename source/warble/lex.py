@@ -245,6 +245,7 @@ class TokenType(enum.Enum):
     LOG = 321
     DRAW = 322
     DRAWLINE = 323
+    SLEEP = 224
 
     PLAYSOUND = 390
     LIGHTS = 391

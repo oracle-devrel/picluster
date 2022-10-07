@@ -1,4 +1,7 @@
 # Emitter object keeps track of the generated code and outputs it.
+
+import os
+
 class Emitter:
     def __init__(self, fullPath):
         self.fullPath = fullPath
@@ -15,5 +18,12 @@ class Emitter:
         self.header += code + '\n'
 
     def writeFile(self):
-        with open(self.fullPath, 'w') as outputFile:
-            outputFile.write(self.header + self.code)
+        stat = os.statvfs('../warble')
+        readonly = bool(stat.f_flag & os.ST_RDONLY)
+
+        if not readonly:
+            with open(self.fullPath, 'w') as outputFile:
+                outputFile.write(self.header + self.code)
+
+    def run(self):
+        exec(self.code)
