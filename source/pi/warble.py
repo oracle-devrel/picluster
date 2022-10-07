@@ -4,6 +4,7 @@ import argparse
 import sys
 import requests
 import os
+import socket
 
 # Run: python3 warblec.py -v "{PRINT(\"test\")}"
 
@@ -34,9 +35,6 @@ def main():
         print(data)
         headers = {'Content-type': 'application/json'}
         response = requests.post(url, data=json.dumps(data), headers=headers)
-        message = response.json()
-        if message["status"] == 'true':
-          print(data)
 
     except socket.error:
         print("error")
