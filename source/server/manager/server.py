@@ -128,7 +128,8 @@ def isValidIp(address):
 
 def sendToPi(ip, code, username, tweet, url):
     try:
-        data = {'ip': ip, 'code': code, 'username': username, 'tweet': tweet, 'url': url}
+        #data = {'ip': ip, 'code': code, 'username': username, 'tweet': tweet, 'url': url}
+        data = {'ip': ip, 'code': code, 'username': username, 'url': url}
         headers = {'Content-type': 'application/json'}
         response = requests.post('http://' + ip + ':8880/code', data = json.dumps(data), headers = headers)
         print(response)

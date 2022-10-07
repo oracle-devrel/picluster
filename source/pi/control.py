@@ -490,10 +490,11 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 code = message['code']
                 code = code.replace("\"", "\\\"")
-                tweet = message['tweet']
+                #tweet = message['tweet']
                 username = message['username']
                 url = message['url']
-                command = 'python3 warble.py --username {} --tweet {} --url {} \"{}\"'.format(username, tweet, url, code)
+                #command = 'python3 warble.py --username {} --tweet {} --url {} \"{}\"'.format(username, tweet, url, code)
+                command = 'python3 warble.py --username {} --url {} \"{}\"'.format(username, url, code)
                 print(command)
                 stream = os.popen(command)
                 output = stream.read()
