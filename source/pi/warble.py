@@ -18,7 +18,7 @@ def main():
     input = args.code
     username = args.username
     url = args.url
-    tweet = args.tweet
+    #tweet = args.tweet
 
     if args.verbose:
         utils.verbose = True
