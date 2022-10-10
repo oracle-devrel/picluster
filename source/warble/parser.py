@@ -268,7 +268,7 @@ class Parser:
 
         elif self.checkToken(TokenType.ROUND):
             self.nextToken()
-            self.emitter.emit(self.getIndent() + "warbleapi.round(")
+            self.emitter.emit(self.getIndent() + "round(")
             self.match(TokenType.BEGIN)
             functionTypes = [self.parseExpression, self.parseExpression]
             self.parseArguments(functionTypes);
