@@ -51,7 +51,7 @@ class GetWarblesThread:
             os.system('source ../../../settwit.sh && bash getwarbles.sh')
 
             #time.sleep(60 * 10) # delay for 10 minutes
-            time.sleep(10)
+            time.sleep(60 * 30)
 
 
 #WarblesThread = GetWarblesThread()
