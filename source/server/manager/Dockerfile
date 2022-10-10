@@ -11,7 +11,6 @@ RUN gu install python
 RUN graalpython -m venv graalenv
 RUN . graalenv/bin/activate && pip install --no-cache-dir requests chardet
 
-RUN pip install requests
 ADD server.py server.py
 
 EXPOSE 80
