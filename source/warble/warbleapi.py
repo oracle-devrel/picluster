@@ -142,20 +142,41 @@ def setPrecision(precision):
 #from math import acos
 
 
-def acos(value):
-    return math.acos(value)
+def acos(x):
+    return math.acos(x)
 
-#def math.ceil(x)
-#math.comb(n, k)
-#math.fabs(x) -> abs
-#math.floor(x)
-#math.sqrt(x)¶
-#math.asin(x)¶
-#math.atan(x)
-#math.atan2(y, x)¶
-#math.cos(x)
-#math.sin(x)
-#math.tan(x)
+def ceil(x):
+    return math.ceil(x)
+
+def comb(n, k):
+    return math.comb(n, k)
+
+def abs(x):
+    return math.fabs(x)
+
+def floor(x):
+    return math.floor(x)
+
+def sqrt(x):
+    return math.sqrt(x)
+
+def asin(x):
+    return math.asin(x)
+
+def atan(x):
+    return math.atan(x)
+
+def atan2(y, x):
+    return math.atan2(y, x)
+
+def cos(x):
+    return math.cos(x)
+
+def sin(x):
+    return math.sin(x)
+
+def tan(x):
+    return math.tan(x)
 
 
 # def round(value, digits):
