@@ -1,0 +1,126 @@
+{
+ "accessors": [
+  {
+   "componentType": 5126,
+   "type": "VEC3",
+   "count": 36,
+   "max": [
+    0.5,
+    0.5,
+    0
+   ],
+   "min": [
+    -0.5,
+    -0.5,
+    0
+   ],
+   "bufferView": 0
+  },
+  {
+   "componentType": 5126,
+   "type": "VEC3",
+   "count": 36,
+   "bufferView": 1
+  },
+  {
+   "componentType": 5126,
+   "type": "VEC2",
+   "count": 36,
+   "bufferView": 2
+  },
+  {
+   "componentType": 5121,
+   "type": "SCALAR",
+   "count": 36,
+   "bufferView": 3
+  }
+ ],
+ "asset": {
+  "version": "2.0",
+  "generator": "clara.io"
+ },
+ "bufferViews": [
+  {
+   "buffer": 0,
+   "byteOffset": 0,
+   "byteLength": 432,
+   "target": 34962,
+   "byteStride": 12
+  },
+  {
+   "buffer": 0,
+   "byteOffset": 432,
+   "byteLength": 432,
+   "target": 34962,
+   "byteStride": 12
+  },
+  {
+   "buffer": 0,
+   "byteOffset": 864,
+   "byteLength": 288,
+   "target": 34962,
+   "byteStride": 8
+  },
+  {
+   "buffer": 0,
+   "byteOffset": 1152,
+   "byteLength": 36,
+   "target": 34963
+  }
+ ],
+ "buffers": [
+  {
+   "byteLength": 1188,
+   "uri": "data:application/octet-stream;base64,AAAAPwAAAAAAAAAA17PdPgAAgD4AAAAAAAAAAAAAAAAAAAAA17PdPgAAgD4AAAAAAACAPtez3T4AAAAAAAAAAAAAAAAAAAAAAACAPtez3T4AAAAAMjENJAAAAD8AAAAAAAAAAAAAAAAAAAAAMjENJAAAAD8AAAAAAACAvtez3T4AAAAAAAAAAAAAAAAAAAAAAACAvtez3T4AAAAA17PdvgAAgD4AAAAAAAAAAAAAAAAAAAAA17PdvgAAgD4AAAAAAAAAvzIxjSQAAAAAAAAAAAAAAAAAAAAAAAAAvzIxjSQAAAAA17PdvgAAgL4AAAAAAAAAAAAAAAAAAAAA17PdvgAAgL4AAAAAAACAvtez3b4AAAAAAAAAAAAAAAAAAAAAAACAvtez3b4AAAAAysnTpAAAAL8AAAAAAAAAAAAAAAAAAAAAysnTpAAAAL8AAAAAAACAPtez3b4AAAAAAAAAAAAAAAAAAAAAAACAPtez3b4AAAAA17PdPgAAgL4AAAAAAAAAAAAAAAAAAAAA17PdPgAAgL4AAAAAAAAAPzIxDaUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AACAPwAAAD/s2W4/AACAPgAAAD8AAAA/7NluPwAAgD4AAEA/oDCJPQAAAD8AAAA/AABAP6AwiT0AAAA/AAAAAAAAAD8AAAA/AAAAPwAAAAAAAIA+oDCJPQAAAD8AAAA/AACAPqAwiT2jMIk9AACAPgAAAD8AAAA/ozCJPQAAgD4AAAAAAAAAPwAAAD8AAAA/AAAAAAAAAD+jMIk9AABAPwAAAD8AAAA/ozCJPQAAQD8AAIA+7NluPwAAAD8AAAA/AACAPuzZbj8AAAA/AACAPwAAAD8AAAA/AAAAPwAAgD8AAEA/7NluPwAAAD8AAAA/AABAP+zZbj/s2W4/AABAPwAAAD8AAAA/7NluPwAAQD8AAIA/AAAAPwAAAD8AAAA/AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIj"
+  }
+ ],
+ "materials": [
+  {
+   "name": "Default-Circle",
+   "pbrMetallicRoughness": {
+    "baseColorFactor": [
+     0.6901960784313725,
+     0.6901960784313725,
+     0.6901960784313725,
+     1
+    ]
+   }
+  }
+ ],
+ "meshes": [
+  {
+   "primitives": [
+    {
+     "indices": 3,
+     "material": 0,
+     "mode": 4,
+     "attributes": {
+      "POSITION": 0,
+      "NORMAL": 1,
+      "TEXCOORD_0": 2
+     }
+    }
+   ]
+  }
+ ],
+ "nodes": [
+  {
+   "name": "Circle",
+   "rotation": [
+    -0.7071067811865475,
+    0,
+    0,
+    0.7071067811865476
+   ],
+   "mesh": 0
+  }
+ ],
+ "scene": 0,
+ "scenes": [
+  {
+   "nodes": [
+    0
+   ]
+  }
+ ]
+}
