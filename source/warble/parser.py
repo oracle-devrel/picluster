@@ -258,6 +258,94 @@ class Parser:
             self.emitter.emit(")")
             self.match(TokenType.END)
 
+        elif self.checkToken(TokenType.CEIL):
+            self.nextToken()
+            self.emitter.emit(self.getIndent() + "warbleapi.ceil(")
+            self.match(TokenType.BEGIN)
+            self.parseExpression()
+            self.emitter.emit(")")
+            self.match(TokenType.END)
+
+        elif self.checkToken(TokenType.COMB):
+            self.nextToken()
+            self.emitter.emit(self.getIndent() + "warbleapi.comb(")
+            self.match(TokenType.BEGIN)
+            functionTypes = [self.parseExpression, self.parseExpression]
+            self.parseArguments(functionTypes);
+            self.emitter.emit(")")
+
+        elif self.checkToken(TokenType.ABS):
+            self.nextToken()
+            self.emitter.emit(self.getIndent() + "warbleapi.abs(")
+            self.match(TokenType.BEGIN)
+            self.parseExpression()
+            self.emitter.emit(")")
+            self.match(TokenType.END)
+
+        elif self.checkToken(TokenType.FLOOR):
+            self.nextToken()
+            self.emitter.emit(self.getIndent() + "warbleapi.floor(")
+            self.match(TokenType.BEGIN)
+            self.parseExpression()
+            self.emitter.emit(")")
+            self.match(TokenType.END)
+
+        elif self.checkToken(TokenType.SQRT):
+            self.nextToken()
+            self.emitter.emit(self.getIndent() + "warbleapi.sqrt(")
+            self.match(TokenType.BEGIN)
+            self.parseExpression()
+            self.emitter.emit(")")
+            self.match(TokenType.END)
+
+        elif self.checkToken(TokenType.ASIN):
+            self.nextToken()
+            self.emitter.emit(self.getIndent() + "warbleapi.asin(")
+            self.match(TokenType.BEGIN)
+            self.parseExpression()
+            self.emitter.emit(")")
+            self.match(TokenType.END)
+
+        elif self.checkToken(TokenType.ATAN):
+            self.nextToken()
+            self.emitter.emit(self.getIndent() + "warbleapi.atan(")
+            self.match(TokenType.BEGIN)
+            self.parseExpression()
+            self.emitter.emit(")")
+            self.match(TokenType.END)
+
+        elif self.checkToken(TokenType.ATAN2):
+            self.nextToken()
+            self.emitter.emit(self.getIndent() + "warbleapi.atan2(")
+            self.match(TokenType.BEGIN)
+            functionTypes = [self.parseExpression, self.parseExpression]
+            self.parseArguments(functionTypes);
+            self.emitter.emit(")")
+
+        elif self.checkToken(TokenType.COS):
+            self.nextToken()
+            self.emitter.emit(self.getIndent() + "warbleapi.cos(")
+            self.match(TokenType.BEGIN)
+            self.parseExpression()
+            self.emitter.emit(")")
+            self.match(TokenType.END)
+
+        elif self.checkToken(TokenType.SIN):
+            self.nextToken()
+            self.emitter.emit(self.getIndent() + "warbleapi.sin(")
+            self.match(TokenType.BEGIN)
+            self.parseExpression()
+            self.emitter.emit(")")
+            self.match(TokenType.END)
+
+        elif self.checkToken(TokenType.TAN):
+            self.nextToken()
+            self.emitter.emit(self.getIndent() + "warbleapi.tan(")
+            self.match(TokenType.BEGIN)
+            self.parseExpression()
+            self.emitter.emit(")")
+            self.match(TokenType.END)
+
         elif self.checkToken(TokenType.SETPRECISION):
             self.nextToken()
             self.emitter.emit(self.getIndent() + "warbleapi.setPrecision(")

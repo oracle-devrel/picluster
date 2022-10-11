@@ -255,6 +255,17 @@ class TokenType(enum.Enum):
     # Functions with returns values
     ROUND = 401
     ACOS = 402
+    CEIL = 403
+    COMB = 404
+    ABS = 405
+    FLOOR = 406
+    SQRT = 407
+    ASIN = 408
+    ATAN = 409
+    ATAN2 = 410
+    COS = 411
+    SIN = 412
+    TAN = 413
     SETPRECISION = 420
     GETDATA = 421
     LOAD = 422
