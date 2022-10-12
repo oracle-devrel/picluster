@@ -48,4 +48,6 @@ Victor Martin
 Rodrigo Bruno
 Serhii Ivanenko
 Yassine Lafkih
+Jeff Smith
+Victor Agreda
 Eli Schilling
