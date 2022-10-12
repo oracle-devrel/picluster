@@ -6,5 +6,5 @@ export SERVER_IP=""
 export AR_SERVER_URL=""
 export WARBLE_URL=""
 
-export JAVA_HOME=""
-export GRAALVISOR_PATH=""
+export JAVA_HOME="/home/pi/bin/jvm"
+export GRAALVISOR_PATH="/home/pi/bin/graalvisor"
