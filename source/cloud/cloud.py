@@ -208,20 +208,24 @@ class Handler(BaseHTTPRequestHandler):
 
                     username = message['username']
                     text = message['text']
-                    print(username)
-                    print(text)
 
-                    ith_tweet = [username, "",
-                                 "", "",
-                                 "", "",
-                                 "", text, "#pi", datetime.now().strftime("%m/%d/%Y, %H:%M:%S")]
-                    db.loc[len(db)] = ith_tweet
-                    path = './warble_data'
-                    filename = path + '/scraped_tweets{}.csv'.format(getNextNum(path))
+                    if len(text) < 280:
+                        body = {'status': 'false'}
+                    else:
+                        print(username)
+                        print(text)
+
+                        ith_tweet = [username, "",
+                                     "", "",
+                                     "", "",
+                                     "", text, "#pi", datetime.now().strftime("%m/%d/%Y, %H:%M:%S")]
+                        db.loc[len(db)] = ith_tweet
+                        path = './warble_data'
+                        filename = path + '/scraped_tweets{}.csv'.format(getNextNum(path))
 
 
-                    db.to_csv(filename)
-                    body = {'status': 'true'}
+                        db.to_csv(filename)
+                        body = {'status': 'true'}
                 except:
                     print("error")
 
