@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from ast import Try
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
 import json
@@ -68,6 +69,7 @@ switch_ip = -1
 
 SERVER_IP = getEnvironmentVariableDefault('SERVER_IP', None)
 AR_SERVER_URL = getEnvironmentVariableDefault('AR_SERVER_URL', None)
+VISOR_SERVER_URL = getEnvironmentVariableDefault('VISOR_SERVER_URL', None)
 WARBLE_URL = getEnvironmentVariableDefault('WARBLE_URL', None)
 hostName = "0.0.0.0"
 piServerPort = 8880
@@ -98,10 +100,23 @@ def background_thread(name):
                 print("pi data sent successfuly")
                 if sleep > SLEEP:
                     sleep = sleep - SLEEP_INC
+            
+            send_trace_to_visor(data)
         except socket.error:
             print("error")
             if sleep <= MAX_SLEEP:
                 sleep = sleep + SLEEP_INC
+
+def send_trace_to_visor(data):
+    if (len(VISOR_SERVER_URL) == 0):
+        return
+    try:
+        headers = {'Content-type': 'application/json'}
+        response = requests.post(
+            VISOR_SERVER_URL, data=json.dumps(data), headers=headers)
+        print("sent pi data to visor".format(response))
+    except socket.error as error:
+        print(f"ERROR: sent pi data to visor: {error.errno}")
 
 
 def is_root():
@@ -249,7 +264,7 @@ def getInfo():
     memory = ""
 
     # Get cpu statistics
-    cpu = str(psutil.cpu_percent()) + '%'
+    cpu = str(psutil.cpu_percent())
 
     # Calculate memory information
     memory = psutil.virtual_memory()
@@ -257,7 +272,7 @@ def getInfo():
     # Convert Bytes to MB (Bytes -> KB -> MB)
     memory_available = round(memory.available/MAX_MEMORY/MAX_MEMORY, 1)
     memory_total = round(memory.total/MAX_MEMORY/MAX_MEMORY, 1)
-    memory_percent = str(memory.percent) + '%'
+    memory_percent = str(memory.percent)
 
     # Calculate disk information
     disk = psutil.disk_usage('/')
@@ -265,7 +280,7 @@ def getInfo():
     # Convert Bytes to GB (Bytes -> KB -> MB -> GB)
     disk_free = round(disk.free/MAX_MEMORY/MAX_MEMORY/MAX_MEMORY, 1)
     disk_total = round(disk.total/MAX_MEMORY/MAX_MEMORY/MAX_MEMORY, 1)
-    disk_percent = str(disk.percent) + '%'
+    disk_percent = str(disk.percent)
 
     # Temperature
     #temperature_info = CPUTemperature().temperature
