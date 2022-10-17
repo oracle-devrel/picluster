@@ -209,8 +209,8 @@ class Handler(BaseHTTPRequestHandler):
                     username = message['username']
                     text = message['text']
 
-                    if len(text) < 280:
-                        body = {'status': 'false', "error": len(text)}
+                    if len(text) > 280:
+                        body = {'status': 'false'}
                     else:
                         print(username)
                         print(text)
