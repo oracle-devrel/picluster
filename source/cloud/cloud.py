@@ -130,7 +130,7 @@ class Handler(BaseHTTPRequestHandler):
         # curl http://<ServerIP>/index.html
         if self.path == "/":
             print('running server...')
-            body = ""
+            body = None
 
             # Respond with the file contents.
             self.send_response(200)
