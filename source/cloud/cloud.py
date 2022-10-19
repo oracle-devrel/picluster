@@ -127,7 +127,7 @@ def getTweetBatch():
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         response = 0
-        #body = {}
+        body = {}
 
         # curl http://<ServerIP>/index.html
         if self.path == "/":
