@@ -133,10 +133,11 @@ class Handler(BaseHTTPRequestHandler):
 
             # Respond with the file contents.
             self.send_response(200)
-            self.send_header("Content-type", "application/json")
+            #self.send_header("Content-type", "application/json")
             self.end_headers()
             content = open('index.html', 'rb').read()
             self.wfile.write(content)
+            return
 
         elif self.path.upper() == "/debug".upper():
             global DEBUG
