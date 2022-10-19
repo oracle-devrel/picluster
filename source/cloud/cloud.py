@@ -125,12 +125,11 @@ def getTweetBatch():
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         response = 0
-        body = {}
+        #body = {}
 
         # curl http://<ServerIP>/index.html
         if self.path == "/":
             print('running server...')
-            body = None
 
             # Respond with the file contents.
             self.send_response(200)
@@ -172,10 +171,10 @@ class Handler(BaseHTTPRequestHandler):
             body = {'status': 'true', 'items': getTweetBatch()}
             print(body)
 
-        self.send_response(response)
-        self.send_header("Content-type", "application/json")
-        self.end_headers()
-        self.wfile.write(bytes(json.dumps(body), "utf8"))
+        # self.send_response(response)
+        # self.send_header("Content-type", "application/json")
+        # self.end_headers()
+        # self.wfile.write(bytes(json.dumps(body), "utf8"))
 
     def do_POST(self):
         # refuse to receive non-json content
