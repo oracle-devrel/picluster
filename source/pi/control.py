@@ -100,7 +100,7 @@ def background_thread(name):
                 print("pi data sent successfuly")
                 if sleep > SLEEP:
                     sleep = sleep - SLEEP_INC
-            
+
             send_trace_to_visor(data)
         except socket.error:
             print("error")
@@ -507,15 +507,15 @@ class Handler(BaseHTTPRequestHandler):
                 code = code.replace("\"", "\\\"")
                 #tweet = message['tweet']
                 username = message['username']
-                url = message['url']
+                #url = message['url']
                 #command = 'python3 warble.py --username {} --tweet {} --url {} \"{}\"'.format(username, tweet, url, code)
-                command = 'python3 warble.py --username {} --url {} \"{}\"'.format(username, url, code)
+                command = 'python3 warble.py --username {} \"{}\"'.format(username, code)
                 print(command)
                 stream = os.popen(command)
                 output = stream.read()
                 body = {'success': 'true', 'output': output}
             except:
-                body = {'success': 'true'}
+                body = {'success': 'false'}
 
         # Set Data
         # curl -X POST -H "Content-Type: application/json" -d '{}' http://<ServerIP>/setdata

@@ -15,7 +15,7 @@ def main():
     argparser.add_argument('-v', '--verbose', action='store_true')
     argparser.add_argument('-u', '--username', required=False, help='username')
     #argparser.add_argument('-t', '--tweet', required=False, help='tweet')
-    argparser.add_argument('-r', '--url', required=False, help='url')
+    #argparser.add_argument('-r', '--url', required=False, help='url')
     argparser.add_argument('-m', '--mode', required=False, help='mode')
     args = argparser.parse_args()
     input = args.code
