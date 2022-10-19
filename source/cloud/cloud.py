@@ -168,7 +168,7 @@ class Handler(BaseHTTPRequestHandler):
 
         # GetCount
         # curl http://<ServerIP>/stop
-        elif self.path.upper() == "/getcount".upper():
+        elif self.path.upper() == "/getpicount".upper():
             response = 200
             global picount
             body = {'status': 'true', 'picount': picount}
@@ -198,6 +198,17 @@ class Handler(BaseHTTPRequestHandler):
 
         response = 0
         body = {}
+
+        # SetCount
+        # curl http://<ServerIP>/stop
+        elif self.path.upper() == "/setpicount".upper():
+            response = 200
+            body = {'status': 'true'}
+            WarblesThread.terminate()
+            print(body)
+            global picount
+            picount = message['picount']
+
 
         if self.path.upper() == "/code".upper():
             response = 200
