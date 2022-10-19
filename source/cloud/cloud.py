@@ -24,6 +24,8 @@ serverPort = 8880
 tag = "#pi"
 DEBUG = False
 
+picount = 0;
+
 def getNextNum(path):
     #path = '.'
     files = os.listdir(path)
@@ -164,6 +166,12 @@ class Handler(BaseHTTPRequestHandler):
             WarblesThread.terminate()
             print(body)
 
+        # GetCount
+        # curl http://<ServerIP>/stop
+        elif self.path.upper() == "/getcount".upper():
+            response = 200
+            body = {'status': 'true', 'picount': picount}
+
         # Next Batch
         # curl http://<ServerIP>/nextbatch
         elif self.path.upper() == "/nextbatch".upper():
@@ -190,7 +198,17 @@ class Handler(BaseHTTPRequestHandler):
         response = 0
         body = {}
 
-        if self.path.upper() == "/code".upper():
+        # SetCount
+        # curl http://<ServerIP>/stop
+        elif self.path.upper() == "/setcount".upper():
+            response = 200
+            body = {'status': 'true'}
+            WarblesThread.terminate()
+            print(body)
+            global picount
+            picount = message['picount']
+
+        elif self.path.upper() == "/code".upper():
             response = 200
             body = {'status': 'false'}
 
