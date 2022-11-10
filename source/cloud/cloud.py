@@ -24,6 +24,8 @@ serverPort = 8880
 tag = "#pi"
 DEBUG = False
 
+picount = 0;
+
 def getNextNum(path):
     #path = '.'
     files = os.listdir(path)
@@ -133,10 +135,11 @@ class Handler(BaseHTTPRequestHandler):
 
             # Respond with the file contents.
             self.send_response(200)
-            self.send_header("Content-type", "application/json")
+            #self.send_header("Content-type", "application/json")
             self.end_headers()
             content = open('index.html', 'rb').read()
             self.wfile.write(content)
+            return
 
         elif self.path.upper() == "/debug".upper():
             global DEBUG
@@ -162,6 +165,13 @@ class Handler(BaseHTTPRequestHandler):
             body = {'status': 'true'}
             WarblesThread.terminate()
             print(body)
+
+        # GetCount
+        # curl http://<ServerIP>/stop
+        elif self.path.upper() == "/getpicount".upper():
+            response = 200
+            global picount
+            body = {'status': 'true', 'picount': picount}
 
         # Next Batch
         # curl http://<ServerIP>/nextbatch
@@ -189,7 +199,18 @@ class Handler(BaseHTTPRequestHandler):
         response = 0
         body = {}
 
-        if self.path.upper() == "/code".upper():
+        # SetCount
+        # curl http://<ServerIP>/stop
+        if self.path.upper() == "/setpicount".upper():
+            response = 200
+            body = {'status': 'true'}
+            WarblesThread.terminate()
+            print(body)
+            global picount
+            picount = message['picount']
+
+
+        elif self.path.upper() == "/code".upper():
             response = 200
             body = {'status': 'false'}
 
@@ -209,7 +230,7 @@ class Handler(BaseHTTPRequestHandler):
                     username = message['username']
                     text = message['text']
 
-                    if len(text) < 280:
+                    if len(text) > 280:
                         body = {'status': 'false'}
                     else:
                         print(username)

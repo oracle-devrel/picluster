@@ -84,7 +84,7 @@ def ping_background_thread(name):
 
 def warble_background_thread(name):
     time.sleep(SLEEP)
-    print("start pi collection")
+    print("start warble collection")
     while True:
         time.sleep(SLEEP)
         try:
@@ -294,10 +294,10 @@ class Handler(BaseHTTPRequestHandler):
                     try:
                         ip_address = pi['ip']
                         data = {'command': command}
-                        message = requests.post('http://' + ip_address + ':8880/runnow', data = json.dumps(data), headers = {'Content-type': 'application/json'}).json()
+                        msg = requests.post('http://' + ip_address + ':8880/runnow', data = json.dumps(data), headers = {'Content-type': 'application/json'}).json()
 
-                        if message["status"] == 'true':
-                            print("success")
+                        if msg["status"] == 'true':
+                            print("success {}".format(ip_address))
 
                     except socket.error:
                         print("error")

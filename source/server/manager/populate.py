@@ -62,6 +62,10 @@ def register(location, switch_ip, ip, port):
 #export SERVER_IP="172.20.0.10:8880"
 # python3 1piatatime.py -b BANK2_4 -l front
 
+# Unknown
+BANK_UNKNOWN="0.0.0.0"
+register("font", BANK_UNKNOWN, "172.20.20.24", 1)
+
 
 # Front
 
@@ -1056,4 +1060,3 @@ register("back", BANK4_6, "172.20.35.1", 36)
 register("back", BANK4_6, "172.20.35.9", 38)
 register("back", BANK4_6, "172.20.35.12", 40)
 register("back", BANK4_6, "172.20.35.6", 42)
-
